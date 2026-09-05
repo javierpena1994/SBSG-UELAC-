@@ -52,8 +52,12 @@ const API = (() => {
 
     // Catálogos
     getCatalogos: () => request('/catalogos'),
+    // Cursos (Gestión Completa)
     getCursos: () => request('/catalogos/cursos'),
-    getFranjas: () => request('/catalogos/franjas'),
+    getCurso: (id) => request(`/catalogos/cursos/${id}`),
+    crearCurso: (data) => request('/catalogos/cursos', { method: 'POST', body: JSON.stringify(data) }),
+    actualizarCurso: (id, data) => request(`/catalogos/cursos/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    eliminarCurso: (id) => request(`/catalogos/cursos/${id}`, { method: 'DELETE' }),
 
     // Materias (Catálogo y Gestión)
     getMaterias: () => request('/materias'),
@@ -157,6 +161,43 @@ const API = (() => {
 
     // Importación / Estado
     importarExcelPorDefecto: () => request('/import/excel-default', { method: 'POST' }),
-    getStatus: () => request('/import/status')
+    getStatus: () => request('/import/status'),
+
+    // ==========================================================
+    // MÓDULO 2: HORARIOS DE EXÁMENES (SORTEO BALANCEADO)
+    // ==========================================================
+    getMateriasEvaluacionCurso: (cursoId) => request(`/examenes/materias-curso/${cursoId}`),
+    guardarMateriasCurso: (cursoId, materias) => request(`/examenes/curso-materias/${cursoId}/guardar`, { method: 'POST', body: JSON.stringify(materias) }),
+    asignarMateriaCurso: (cursoId, materiaId, tipoComplejidad) => {
+      const q = tipoComplejidad ? `&tipoComplejidad=${encodeURIComponent(tipoComplejidad)}` : '';
+      return request(`/examenes/curso-materias/${cursoId}/asignar?materiaId=${materiaId}${q}`, { method: 'POST' });
+    },
+    desasignarMateriaCurso: (cursoId, materiaId) => request(`/examenes/curso-materias/${cursoId}/materia/${materiaId}`, { method: 'DELETE' }),
+    cambiarComplejidadMateriaCurso: (cursoId, materiaId, tipoComplejidad) => {
+      return request(`/examenes/curso-materias/${cursoId}/materia/${materiaId}/complejidad?tipoComplejidad=${encodeURIComponent(tipoComplejidad)}`, { method: 'PATCH' });
+    },
+    generarSorteoExamen: (data) => request('/examenes/generar-sorteo', { method: 'POST', body: JSON.stringify(data) }),
+    guardarHorarioExamen: (data) => request('/examenes/guardar', { method: 'POST', body: JSON.stringify(data) }),
+    getHistorialHorariosExamen: () => request('/examenes/historial'),
+    getHorarioExamen: (id) => request(`/examenes/${id}`),
+    eliminarHorarioExamen: (id) => request(`/examenes/${id}`, { method: 'DELETE' }),
+
+    // ==========================================================
+    // MÓDULO 3: CRONOGRAMA DE ACTIVIDADES INSTITUCIONALES
+    // ==========================================================
+    getActividadesCronograma: (params = {}) => {
+      const qs = new URLSearchParams();
+      if (params.categoria) qs.append('categoria', params.categoria);
+      if (params.estado) qs.append('estado', params.estado);
+      if (params.dirigidoA) qs.append('dirigidoA', params.dirigidoA);
+      return request(`/cronograma?${qs.toString()}`);
+    },
+    getActividadesCronogramaRango: (fechaInicio, fechaFin) => {
+      return request(`/cronograma/rango?fechaInicio=${encodeURIComponent(fechaInicio)}&fechaFin=${encodeURIComponent(fechaFin)}`);
+    },
+    getActividadCronograma: (id) => request(`/cronograma/${id}`),
+    crearActividadCronograma: (data) => request('/cronograma', { method: 'POST', body: JSON.stringify(data) }),
+    actualizarActividadCronograma: (id, data) => request(`/cronograma/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    eliminarActividadCronograma: (id) => request(`/cronograma/${id}`, { method: 'DELETE' })
   };
 })();

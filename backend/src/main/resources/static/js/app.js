@@ -142,39 +142,84 @@ const App = (() => {
     if (optgroupSuperior.children.length > 0) selectEl.appendChild(optgroupSuperior);
   }
 
-  // Centralized Sidebar Component
+  // Centralized Sidebar Component per Application
   function renderSidebar() {
     const sidebarContainer = document.getElementById('app-sidebar') || document.querySelector('aside.sidebar');
     if (!sidebarContainer) return;
 
     const currentPath = window.location.pathname;
-    const isHome = currentPath.endsWith('index.html') || currentPath === '/' || currentPath.endsWith('/') || currentPath.endsWith('SBSG/');
+    
+    // Si estamos en el Launchpad (index.html), no renderizar sidebar
+    if (currentPath.endsWith('index.html') || currentPath === '/' || currentPath.endsWith('/') || currentPath.endsWith('SBSG/')) {
+      return;
+    }
 
-    const menuSections = [
-      {
-        title: 'GESTIÓN DE CONTINGENCIAS',
-        items: [
-          { href: 'registro.html', icon: '<i class="fa-solid fa-circle-plus"></i>', label: 'Nueva Contingencia' },
-          { href: 'historial.html', icon: '<i class="fa-solid fa-chart-line"></i>', label: 'Historial y Reportes' }
-        ]
-      },
-      {
-        title: 'ADMINISTRACIÓN & AÑO LECTIVO',
-        items: [
-          { href: 'docentes.html', icon: '<i class="fa-solid fa-users"></i>', label: 'Gestión de Docentes' },
-          { href: 'materias.html', icon: '<i class="fa-solid fa-book-bookmark"></i>', label: 'Gestión de Materias' },
-          { href: 'horarios.html', icon: '<i class="fa-solid fa-calendar-days"></i>', label: 'Editor de Horarios' }
-        ]
-      }
-    ];
+    const isExamenes = currentPath.endsWith('examenes.html');
+    const isCronograma = currentPath.endsWith('cronograma.html');
+
+    let menuSections = [];
+    let appHomeHref = 'contingencias_dashboard.html';
+    let footerTitle = 'Gestión Docente v1.0';
+    let footerSub = 'Base de Datos MySQL';
+
+    if (isExamenes) {
+      appHomeHref = 'examenes.html';
+      footerTitle = 'Módulo de Exámenes v1.0';
+      footerSub = 'Sorteo Aleatorio Balanceado';
+      menuSections = [
+        {
+          title: 'HORARIOS DE EXÁMENES',
+          items: [
+            { href: 'examenes.html#generador', icon: '<i class="fa-solid fa-dice"></i>', label: 'Generador de Horarios' },
+            { href: 'examenes.html#historial', icon: '<i class="fa-solid fa-chart-line"></i>', label: 'Historial y Reportes' },
+            { href: 'examenes.html#cursos-materias', icon: '<i class="fa-solid fa-book-bookmark"></i>', label: 'Cursos / Materias' }
+          ]
+        }
+      ];
+    } else if (isCronograma) {
+      appHomeHref = 'cronograma.html';
+      footerTitle = 'Cronograma Institucional v1.0';
+      footerSub = 'Planificación Escolar';
+      menuSections = [
+        {
+          title: 'CRONOGRAMA INSTITUCIONAL',
+          items: [
+            { href: 'cronograma.html#calendario', icon: '<i class="fa-solid fa-calendar-days"></i>', label: 'Vista Calendario' },
+            { href: 'cronograma.html#lista', icon: '<i class="fa-solid fa-list-check"></i>', label: 'Vista Listado & Filtros' }
+          ]
+        }
+      ];
+    } else {
+      // MUNDO 1: GESTIÓN DE CONTINGENCIAS (ORIGINAL TAL CUAL)
+      appHomeHref = 'contingencias_dashboard.html';
+      footerTitle = 'Gestión Docente v1.0';
+      footerSub = 'Base de Datos MySQL';
+      menuSections = [
+        {
+          title: 'GESTIÓN DE CONTINGENCIAS',
+          items: [
+            { href: 'contingencias_dashboard.html', icon: '<i class="fa-solid fa-gauge-high"></i>', label: 'Panel Contingencias' },
+            { href: 'registro.html', icon: '<i class="fa-solid fa-circle-plus"></i>', label: 'Nueva Contingencia' },
+            { href: 'historial.html', icon: '<i class="fa-solid fa-chart-line"></i>', label: 'Historial y Reportes' }
+          ]
+        },
+        {
+          title: 'ADMINISTRACIÓN & AÑO LECTIVO',
+          items: [
+            { href: 'docentes.html', icon: '<i class="fa-solid fa-users"></i>', label: 'Gestión de Docentes' },
+            { href: 'materias.html', icon: '<i class="fa-solid fa-book-bookmark"></i>', label: 'Gestión de Materias' },
+            { href: 'horarios.html', icon: '<i class="fa-solid fa-calendar-days"></i>', label: 'Editor de Horarios' }
+          ]
+        }
+      ];
+    }
 
     let navHtml = '';
     menuSections.forEach(sec => {
       navHtml += `<div class="sidebar-section-title">${sec.title}</div>`;
       sec.items.forEach(item => {
-        const isActive = currentPath.endsWith(item.href);
         navHtml += `
-          <a href="${item.href}" class="nav-item ${isActive ? 'active' : ''}">
+          <a href="${item.href}" class="nav-item">
             <span class="nav-icon">${item.icon}</span>
             <span>${item.label}</span>
           </a>
@@ -182,15 +227,29 @@ const App = (() => {
       });
     });
 
+    // Añadir enlace para volver al Launchpad de Aplicaciones
+    navHtml += `
+      <div class="sidebar-section-title" style="margin-top:20px;">MENÚ PRINCIPAL</div>
+      <a href="index.html" class="nav-item" style="color: #94a3b8;">
+        <span class="nav-icon"><i class="fa-solid fa-table-cells-large"></i></span>
+        <span>Salir al Launchpad</span>
+      </a>
+    `;
+
+    const isAppHome = currentPath.endsWith(appHomeHref);
+
     sidebarContainer.classList.add('sidebar');
     sidebarContainer.innerHTML = `
       <div class="sidebar-header">
-        <a href="index.html" class="sidebar-logo-wrapper" title="Ir al Inicio">
+        <a href="${appHomeHref}" class="sidebar-logo-wrapper" title="Panel de la Aplicación">
           <img src="assets/logo.jpg" alt="Logo Institución" class="sidebar-logo">
         </a>
         <div class="sidebar-home-bar">
-          <a href="index.html" class="btn-home-icon ${isHome ? 'active' : ''}" title="Inicio / Panel Principal">
+          <a href="${appHomeHref}" class="btn-home-icon ${isAppHome ? 'active' : ''}" title="Inicio de esta Aplicación">
             <i class="fa-solid fa-house"></i>
+          </a>
+          <a href="index.html" class="btn-home-icon" title="Volver al Menú Principal (Launchpad)" style="margin-left:4px; opacity:0.8;">
+            <i class="fa-solid fa-grip"></i>
           </a>
         </div>
       </div>
@@ -200,8 +259,8 @@ const App = (() => {
       </nav>
 
       <div class="sidebar-footer">
-        <div>Gestión Docente v1.0</div>
-        <div>Base de Datos MySQL</div>
+        <div>${footerTitle}</div>
+        <div>${footerSub}</div>
       </div>
     `;
   }

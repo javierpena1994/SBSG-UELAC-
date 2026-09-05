@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Horarios de Exámenes | SBSG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <style>
+    .exam-badge-compleja {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .exam-badge-nocompleja {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .complexity-toggle-btn {
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .complexity-toggle-btn.is-compleja {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fca5a5;
+    }
+    .complexity-toggle-btn.is-nocompleja {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
+    }
+    .subject-config-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s ease;
+    }
+    .subject-config-row:hover {
+      background: #f8fafc;
+    }
+    .print-official-sheet {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .print-header {
+      text-align: center;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #1e3a8a;
+      padding-bottom: 16px;
+    }
+    .print-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+      text-align: center;
+    }
+    .sig-line {
+      border-top: 1px solid #334155;
+      padding-top: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Modales */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 540px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 16px 20px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0;
+    }
+    .modal-body {
+      padding: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-footer {
+      padding: 14px 20px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-exam-area, #printable-exam-area * {
+        visibility: visible;
+      }
+      #printable-exam-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 10px;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Sidebar Navigation Centralizado -->
+    <aside id="app-sidebar" class="sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="page-title-group">
+          <h1>Generador de Horarios de Exámenes</h1>
+          <p>Sorteo aleatorio inteligente y balanceo pedagógico (1 materia compleja + 1 menos compleja por día)</p>
+        </div>
+        <div class="top-bar-actions">
+          <a href="index.html" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-arrow-left"></i> Salir al Launchpad
+          </a>
+        </div>
+      </header>
+
+      <div class="content-container">
+
+        <!-- ==========================================================
+             VISTA 1: GENERADOR DE HORARIOS
+             ========================================================== -->
+        <div id="section-generador">
+          
+          <!-- Card de Parámetros -->
+          <div class="card no-print" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div class="card-title">Paso 1: Parámetros del Cronograma de Exámenes</div>
+            </div>
+            
+            <form id="form-exam-params">
+              <div class="form-grid">
+                <!-- Curso -->
+                <div class="form-group">
+                  <label for="select-curso" class="form-label required">Curso o Nivel:</label>
+                  <select id="select-curso" class="form-control" required>
+                    <option value="">Seleccione un curso...</option>
+                  </select>
+                </div>
+
+                <!-- Título del Horario -->
+                <div class="form-group">
+                  <label for="input-titulo" class="form-label required">Título de la Evaluación:</label>
+                  <input type="text" id="input-titulo" class="form-control" value="Exámenes del Primer Quimestre - 2026-2027" required>
+                </div>
+
+                <!-- Fecha de Inicio -->
+                <div class="form-group">
+                  <label for="input-fecha-inicio" class="form-label required">Fecha de Inicio:</label>
+                  <input type="date" id="input-fecha-inicio" class="form-control" required>
+                </div>
+
+                <!-- Cantidad de Días de Examen -->
+                <div class="form-group">
+                  <label for="select-num-dias" class="form-label required">Cantidad de Días:</label>
+                  <select id="select-num-dias" class="form-control" required>
+                    <option value="3">3 Días de Exámenes</option>
+                    <option value="4">4 Días de Exámenes</option>
+                    <option value="5" selected>5 Días de Exámenes (Semana Completa)</option>
+                    <option value="6">6 Días de Exámenes</option>
+                    <option value="7">7 Días de Exámenes</option>
+                  </select>
+                </div>
+
+                <!-- Materias por Día -->
+                <div class="form-group">
+                  <label for="select-materias-dia" class="form-label required">Materias por Día:</label>
+                  <select id="select-materias-dia" class="form-control" required>
+                    <option value="2" selected>2 Materias por día (1 Compleja + 1 Menos Compleja)</option>
+                    <option value="1">1 Materia por día</option>
+                  </select>
+                </div>
+
+                <!-- Opción Fin de Semana -->
+                <div class="form-group" style="display:flex; align-items:center; gap:8px; padding-top:28px;">
+                  <input type="checkbox" id="check-saltar-fds" checked style="width:18px; height:18px; cursor:pointer;">
+                  <label for="check-saltar-fds" style="font-size:13px; font-weight:600; cursor:pointer; color:var(--primary);">
+                    Saltar sábados y domingos (solo días hábiles)
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Card de Materias y Calificación de Complejidad -->
+          <div class="card no-print" style="margin-bottom: 24px;">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="card-title">Paso 2: Materias a Evaluar y Clasificación de Complejidad</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                  Haz clic en el botón de cada materia para alternar entre <strong>🔴 Compleja</strong> y <strong>🟢 Menos Compleja</strong>.
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button type="button" id="btn-add-subject-modal" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-plus"></i> Añadir Materia a Evaluar
+                </button>
+                <div id="complexity-summary-badge" style="font-size:12px; font-weight:700; background:#f8fafc; border:1px solid var(--border); padding:6px 12px; border-radius:20px;">
+                  <span id="badge-count-complejas" style="color:#b91c1c;">0 Complejas</span> | <span id="badge-count-nocomplejas" style="color:#15803d;">0 Menos Complejas</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista Dinámica de Materias -->
+            <div id="subjects-config-container" style="max-height: 380px; overflow-y: auto;">
+              <div style="text-align: center; padding: 24px; color: var(--text-muted);">
+                <i class="fa-solid fa-hand-pointer" style="margin-right:6px;"></i> Seleccione un curso arriba para cargar sus materias automáticas.
+              </div>
+            </div>
+
+            <div style="padding: 18px 24px; background: #f8fafc; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div style="font-size: 12px; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-circle-info" style="color:#2563eb;"></i> Cada sorteo baraja aleatoriamente las materias respetando el balance 1+1 por día.
+              </div>
+              <button type="button" id="btn-generar-sorteo" class="btn btn-primary" style="background:#9333ea; border-color:#9333ea; font-size:14px; padding:10px 22px; display:inline-flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-dice" style="font-size:16px;"></i> Generar Sorteo Aleatorio de Horario
+              </button>
+            </div>
+          </div>
+
+          <!-- Card de Vista Previa del Horario Generado -->
+          <div id="generated-schedule-card" class="card" style="display: none;">
+            <div class="card-header no-print" style="flex-wrap: wrap; gap: 12px;">
+              <div class="card-title">Paso 3: Horario Generado y Formato Oficial</div>
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button type="button" id="btn-re-sortear" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-rotate" style="color:#9333ea;"></i> Volver a Sortear (Otra Alternativa)
+                </button>
+                <button type="button" id="btn-guardar-horario" class="btn btn-primary btn-sm" style="background:#16a34a; border-color:#16a34a; display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-floppy-disk"></i> Guardar en Historial
+                </button>
+                <button type="button" id="btn-imprimir-horario" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Hoja Imprimible Oficial con Membrete Institucional -->
+            <div id="printable-exam-area" class="print-official-sheet">
+              <div class="print-header">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 8px;">
+                  <img src="assets/logo.jpg" alt="Logo SBSG" style="height: 60px; object-fit: contain;">
+                  <div>
+                    <h2 style="font-size: 17px; font-weight: 800; color: #1e3a8a; margin: 0; text-transform: uppercase;">
+                      UNIDAD EDUCATIVA SANTA BÁRBARA DE SAMBORONDÓN
+                    </h2>
+                    <h3 style="font-size: 13px; font-weight: 600; color: #475569; margin: 2px 0 0 0;">
+                      CRONOGRAMA OFICIAL DE EXÁMENES Y EVALUACIONES TRIMESTRALES
+                    </h3>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 14px; font-size: 12.5px; color: #334155; font-weight: 600; background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);">
+                  <span><strong>Curso:</strong> <span id="print-curso-nombre">-</span></span>
+                  <span><strong>Periodo:</strong> <span id="print-titulo">-</span></span>
+                  <span><strong>Fechas:</strong> <span id="print-rango-fechas">-</span></span>
+                </div>
+              </div>
+
+              <!-- Tabla de Horario de Examen -->
+              <div class="table-responsive">
+                <table class="data-table" id="table-generated-schedule" style="width:100%;">
+                  <thead>
+                    <tr>
+                      <th style="width: 140px; text-align:center;">Día / Fecha</th>
+                      <th style="text-align:center;">1° Periodo (07h30 - 08h50)<br><small style="font-weight:normal; opacity:0.8;">Materia Compleja</small></th>
+                      <th style="text-align:center;">2° Periodo (09h10 - 10h30)<br><small style="font-weight:normal; opacity:0.8;">Materia Menos Compleja</small></th>
+                      <th style="width: 170px; text-align:center;">Docente Supervisor</th>
+                    </tr>
+                  </thead>
+                  <tbody id="generated-schedule-tbody">
+                    <!-- Dinámico -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Indicaciones y Firmas -->
+              <div style="margin-top: 24px; font-size: 11px; color: #64748b; line-height: 1.4;">
+                <strong>Instrucciones:</strong> Los estudiantes deben presentarse puntualmente con sus respectivos materiales de trabajo. Durante las evaluaciones no se permite el uso de dispositivos móviles sin autorización del docente evaluador.
+              </div>
+
+              <div class="print-signatures">
+                <div>
+                  <div class="sig-line">Vicerrectorado Académico</div>
+                </div>
+                <div>
+                  <div class="sig-line">Comisión Técnico Pedagógica</div>
+                </div>
+                <div>
+                  <div class="sig-line">Docente Tutor de Curso</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ==========================================================
+             VISTA 2: HISTORIAL Y REPORTES
+             ========================================================== -->
+        <div id="section-historial" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Historial de Horarios de Exámenes Generados</div>
+              <button type="button" id="btn-recargar-historial" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrows-rotate"></i> Actualizar Historial
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Fecha Registro</th>
+                    <th>Título de Evaluación</th>
+                    <th>Curso / Nivel</th>
+                    <th>Días</th>
+                    <th>Rango de Fechas</th>
+                    <th style="text-align:center;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="historial-examenes-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                      Cargando historial de horarios...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================================
+             VISTA 3: CURSOS / MATERIAS (ASIGNACIÓN & GESTIÓN)
+             ========================================================== -->
+        <div id="section-cursos-materias" style="display: none;">
+          
+          <!-- Bloque 1: Asignación de Materias por Curso & Complejidad -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div class="card-title">1. Asignación y Dificultad de Materias por Curso</div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                  Define qué materias se imparten en cada curso y su nivel de dificultad. Al hacer clic en el botón se cambia su estado entre 🔴 Compleja y 🟢 Menos Compleja.
+                </p>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <select id="config-select-curso" class="form-control" style="width: auto; min-width: 220px;">
+                  <option value="">Seleccione un curso...</option>
+                </select>
+                <button type="button" id="btn-asignar-materia-modal" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-plus"></i> Asignar Materia a este Curso
+                </button>
+                <button type="button" id="btn-guardar-asignacion-curso" class="btn btn-primary btn-sm" style="background:#16a34a; border-color:#16a34a; display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Materia</th>
+                    <th style="width: 220px; text-align:center;">Dificultad / Complejidad</th>
+                    <th style="width: 100px; text-align:center;">Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="config-materias-curso-tbody">
+                  <tr>
+                    <td colspan="3" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                      <i class="fa-solid fa-hand-pointer" style="margin-right:6px;"></i> Seleccione un curso arriba para ver y configurar sus materias asignadas.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bloque 2: Gestión Global de Cursos y Materias (Compartido con Contingencias) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px;">
+            
+            <!-- Panel Gestión de Cursos -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Catálogo de Cursos</div>
+                <button type="button" id="btn-nuevo-curso" class="btn btn-secondary btn-sm">
+                  <i class="fa-solid fa-plus"></i> + Nuevo Curso
+                </button>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); padding:0 20px 10px 20px; margin:0;">
+                Los cursos agregados o eliminados aquí se actualizan en todo el sistema (incluyendo Contingencias).
+              </p>
+              <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Nombre del Curso</th>
+                      <th>Nivel</th>
+                      <th style="text-align:center; width:80px;">Eliminar</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-cursos-tbody">
+                    <tr>
+                      <td colspan="3" style="text-align:center; padding:16px;">Cargando cursos...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Panel Gestión de Materias -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Catálogo de Materias</div>
+                <button type="button" id="btn-nueva-materia" class="btn btn-secondary btn-sm">
+                  <i class="fa-solid fa-plus"></i> + Nueva Materia
+                </button>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); padding:0 20px 10px 20px; margin:0;">
+                Las materias agregadas o eliminadas aquí se sincronizan automáticamente con Contingencias.
+              </p>
+              <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Nombre de la Materia</th>
+                      <th style="text-align:center; width:80px;">Eliminar</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-materias-tbody">
+                    <tr>
+                      <td colspan="2" style="text-align:center; padding:16px;">Cargando materias...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================================
+       MODAL: ASIGNAR MATERIA A CURSO (DESPLEGABLE / SELECTOR)
+       ========================================================== -->
+  <div id="modal-asignar-materia" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-asignar-title">Asignar Materia al Curso</h3>
+        <button type="button" id="btn-cerrar-modal-asignar" class="btn btn-secondary btn-sm" style="border:none; background:transparent; font-size:16px;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-asignar-materia">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="select-materia-catalogo" class="form-label required">Seleccionar Materia del Catálogo:</label>
+            <select id="select-materia-catalogo" class="form-control" required>
+              <option value="">Seleccione una materia...</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-top: 14px;">
+            <label for="select-complejidad-asignar" class="form-label required">Grado de Dificultad:</label>
+            <select id="select-complejidad-asignar" class="form-control" required>
+              <option value="COMPLEJA">🔴 Compleja (Matemática, Física, Química, etc.)</option>
+              <option value="NO_COMPLEJA">🟢 Menos Compleja (Educación Física, Arte, Inglés, etc.)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-cancelar-modal-asignar" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="background:#9333ea; border-color:#9333ea;">
+            <i class="fa-solid fa-check"></i> Asignar Materia
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/examenes.js"></script>
+</body>
+</html>

@@ -110,23 +110,25 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 10px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.82);
   font-weight: 500;
   font-size: 12.5px;
-  transition: var(--transition);
+  transition: background-color 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  background-color: transparent;
 }
 
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.14);
   color: #ffffff;
 }
 
 .nav-item.active {
-  background-color: var(--primary-light);
-  color: #ffffff;
-  font-weight: 600;
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
 }
 
 .nav-icon {

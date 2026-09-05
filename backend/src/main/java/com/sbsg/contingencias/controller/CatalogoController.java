@@ -53,6 +53,24 @@ public class CatalogoController {
         return ResponseEntity.ok(cursos);
     }
 
+    @PostMapping("/cursos")
+    public ResponseEntity<Curso> crearCurso(@RequestBody Curso curso) {
+        if (curso.getNombre() == null || curso.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del curso es obligatorio.");
+        }
+        String nombreNorm = curso.getNombre().trim().toUpperCase();
+        curso.setNombre(nombreNorm);
+        return ResponseEntity.ok(cursoRepository.save(curso));
+    }
+
+    @DeleteMapping("/cursos/{id}")
+    public ResponseEntity<Void> eliminarCurso(@PathVariable Long id) {
+        if (cursoRepository.existsById(id)) {
+            cursoRepository.deleteById(id);
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/materias")
     public ResponseEntity<List<Materia>> obtenerMaterias() {
         return ResponseEntity.ok(materiaRepository.findAllByOrderByNombreAsc());
