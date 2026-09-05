@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial y Reportes de Contingencias | SBSG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css?v=2.5">
+  <link rel="stylesheet" href="css/layout.css?v=2.5">
+  <link rel="stylesheet" href="css/forms.css?v=2.5">
+  <link rel="stylesheet" href="css/tables.css?v=2.5">
+  <link rel="stylesheet" href="css/report.css?v=2.5">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Sidebar Navigation Centralizado -->
+    <aside id="app-sidebar" class="sidebar no-print"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar no-print">
+        <div class="page-title-group">
+          <h1>Historial y Reportes de Contingencias</h1>
+          <p>Consulte, filtre por período, revise detalles, elimine o genere informes oficiales</p>
+        </div>
+        <div class="top-bar-actions">
+          <button type="button" id="btn-generar-imagen" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-image"></i> Generar como Imagen
+          </button>
+          <button type="button" id="btn-imprimir-reporte" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-file-pdf"></i> Imprimir / Guardar PDF
+          </button>
+        </div>
+      </header>
+
+      <div class="content-container">
+        
+        <!-- Tarjeta de Filtros de Reporte / Historial -->
+        <div class="card no-print">
+          <div class="card-header">
+            <div class="card-title">Filtros para Generación de Informe e Historial</div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="rep-fecha-inicio">Fecha Desde</label>
+              <input type="date" id="rep-fecha-inicio" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rep-fecha-fin">Fecha Hasta</label>
+              <input type="date" id="rep-fecha-fin" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rep-docente-reemplazo">Docente Reemplazante (Opcional)</label>
+              <select id="rep-docente-reemplazo" class="form-control">
+                <option value="">Todos los docentes</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rep-docente-ausente">Docente Ausente (Opcional)</label>
+              <select id="rep-docente-ausente" class="form-control">
+                <option value="">Todos los docentes</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; display: flex; justify-content: flex-end;">
+            <button type="button" id="btn-consultar-reporte" class="btn btn-primary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-chart-pie"></i> Generar Reporte
+            </button>
+          </div>
+        </div>
+
+        <!-- Encabezado Institucional para Reporte / Impresión -->
+        <div class="card" id="printable-report-card">
+          
+          <div class="report-header-preview">
+            <img src="assets/logo.jpg" alt="Logo Institución" class="report-logo">
+            <div class="report-institution-info">
+              <h2>UNIDAD EDUCATIVA LOLA AROSEMENA DE CARBO</h2>
+              <div class="report-department">COORDINACIÓN PEDAGÓGICA</div>
+              <div class="report-title-main">INFORME DE CONTINGENCIA Y COBERTURA DOCENTE</div>
+              <p id="report-periodo-text" class="report-periodo">
+                Período comprendido: Cargando...
+              </p>
+            </div>
+          </div>
+
+          <!-- Resumen de Horas y Totales KPI -->
+          <div class="report-summary-cards">
+            <div class="report-stat-box">
+              <div class="number" id="kpi-total-horas">0 h</div>
+              <div class="desc">Total Horas / Períodos Cubiertos</div>
+            </div>
+
+            <div class="report-stat-box">
+              <div class="number" id="kpi-total-contingencias">0</div>
+              <div class="desc">Total Contingencias Atendidas</div>
+            </div>
+
+            <div class="report-stat-box">
+              <div class="number" id="kpi-con-recursos" style="color:var(--success);">0</div>
+              <div class="desc">Con Material Pedagógico</div>
+            </div>
+
+            <div class="report-stat-box">
+              <div class="number" id="kpi-sin-recursos" style="color:var(--warning);">0</div>
+              <div class="desc">Sin Material Pedagógico</div>
+            </div>
+          </div>
+
+          <!-- Tablas de Ranking / Resumen por Docente -->
+          <div class="rankings-grid">
+            <div class="ranking-card">
+              <h3>Cobertura por Docente Reemplazante (Top Horas)</h3>
+              <div id="ranking-reemplazos-list" class="ranking-list"></div>
+            </div>
+
+            <div class="ranking-card">
+              <h3>Inasistencias por Docente (Horas Ausentes)</h3>
+              <div id="ranking-ausentes-list" class="ranking-list"></div>
+            </div>
+          </div>
+
+          <!-- Tabla Detallada de Contingencias en el Periodo con Acciones -->
+          <div style="margin-top: 16px;">
+            <h3 style="font-size: 13.5px; font-weight: 700; color: var(--primary); margin-bottom: 10px;">
+              Detalle Pormenorizado de Contingencias del Período
+            </h3>
+            
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Docente Ausente</th>
+                    <th>Docente Reemplazante</th>
+                    <th>Hora</th>
+                    <th>Curso</th>
+                    <th>Materia</th>
+                    <th class="no-print" style="text-align:center; width:90px;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="report-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bloque de Firma Única para Impresión -->
+          <div class="signatures-container">
+            <div class="signature-line">
+              <strong>COORDINACIÓN PEDAGÓGICA</strong>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal para Ver Detalle Completo de una Contingencia -->
+  <div id="modal-detalle-contingencia" class="modal-backdrop">
+    <div class="modal-content" style="max-width: 560px;">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-file-lines" style="color:var(--primary-light);"></i>
+          <span id="modal-detalle-title">Detalle de Contingencia</span>
+        </div>
+        <button type="button" class="btn-icon" onclick="window.cerrarModalDetalle()" title="Cerrar" style="background:none; border:none; cursor:pointer; font-size:15px; color:var(--text-muted);">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12.5px;">
+          
+          <div style="background:#f8fafc; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">Fecha y Día</div>
+            <div id="modal-det-fecha" style="font-weight:700; color:var(--primary); font-size:12.5px;">-</div>
+          </div>
+
+          <div style="background:#f8fafc; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">Hora / Franja</div>
+            <div id="modal-det-franja" style="font-weight:700; color:var(--primary); font-size:12.5px;">-</div>
+          </div>
+
+          <div style="background:#fef2f2; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid #fecaca;">
+            <div style="font-size:10.5px; font-weight:700; color:#991b1b; text-transform:uppercase; margin-bottom:2px;">Docente Ausente</div>
+            <div id="modal-det-ausente" style="font-weight:700; color:#991b1b; font-size:12.5px;">-</div>
+          </div>
+
+          <div style="background:#f0fdf4; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid #bbf7d0;">
+            <div style="font-size:10.5px; font-weight:700; color:#166534; text-transform:uppercase; margin-bottom:2px;">Docente Reemplazante</div>
+            <div id="modal-det-reemplazo" style="font-weight:700; color:#166534; font-size:12.5px;">-</div>
+          </div>
+
+          <div style="background:#f8fafc; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">Curso / Grado</div>
+            <div id="modal-det-curso" style="font-weight:700; color:var(--primary); font-size:12.5px;">-</div>
+          </div>
+
+          <div style="background:#f8fafc; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">Materia / Asignatura</div>
+            <div id="modal-det-materia" style="font-weight:700; color:var(--primary); font-size:12.5px;">-</div>
+          </div>
+
+          <div style="background:#f8fafc; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">¿Dejó Material?</div>
+            <div id="modal-det-recursos" style="font-weight:700;">-</div>
+          </div>
+
+          <div style="background:#f8fafc; padding:9px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">Períodos / Horas</div>
+            <div id="modal-det-periodos" style="font-weight:700; color:var(--primary); font-size:12.5px;">-</div>
+          </div>
+
+          <div style="grid-column: 1 / -1; background:#f8fafc; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Motivo / Observación</div>
+            <div id="modal-det-obs" style="font-size:12px; color:var(--text-primary); line-height:1.4;">-</div>
+          </div>
+
+          <div style="grid-column: 1 / -1; font-size:11px; color:var(--text-muted); text-align:right;">
+            Registrado: <span id="modal-det-created">-</span>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" id="modal-btn-eliminar" class="btn btn-danger btn-sm" onclick="window.eliminarDesdeModal()" style="display:inline-flex; align-items:center; gap:5px; background:#dc2626; color:#fff; border:none; padding:6px 12px;">
+          <i class="fa-solid fa-trash-can"></i> Eliminar Registro
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="window.cerrarModalDetalle()" style="padding:6px 12px;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/lib/html2canvas.min.js?v=2.6"></script>
+  <script src="js/api.js?v=2.6"></script>
+  <script src="js/app.js?v=2.6"></script>
+  <script src="js/reportes.js?v=2.6"></script>
+</body>
+</html>

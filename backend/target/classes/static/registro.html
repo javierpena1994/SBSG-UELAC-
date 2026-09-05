@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Contingencia | SBSG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/tables.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Sidebar Navigation Centralizado -->
+    <aside id="app-sidebar" class="sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="page-title-group">
+          <h1>Registro de Contingencia y Asignación de Reemplazo</h1>
+          <p>Seleccione el horario y docente ausente para buscar docentes disponibles</p>
+        </div>
+        <div class="top-bar-actions">
+          <a href="historial.html" class="btn btn-secondary" style="display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-clipboard-list"></i> Ver Historial
+          </a>
+        </div>
+      </header>
+
+      <div class="content-container">
+        <form id="form-contingencia">
+          <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 16px; align-items: start;">
+            
+            <!-- Columna Izquierda: Datos de Inasistencia y Clases a Cubrir -->
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              
+              <!-- 1. Cabecera de Inasistencia -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">1. Datos Generales de la Inasistencia</div>
+                  <span id="dia-semana-badge" class="badge" style="background:#ebf8ff; color:var(--primary); font-size:12px; padding:3px 8px;"></span>
+                </div>
+
+                <div class="form-grid">
+                  <!-- Fecha -->
+                  <div class="form-group">
+                    <label class="form-label" for="fecha">
+                      Fecha <span class="required">*</span>
+                    </label>
+                    <input type="date" id="fecha" class="form-control" required>
+                  </div>
+
+                  <!-- Docente Ausente -->
+                  <div class="form-group">
+                    <label class="form-label" for="docente-ausente">
+                      Docente Ausente (No asiste) <span class="required">*</span>
+                    </label>
+                    <select id="docente-ausente" class="form-control" required>
+                      <option value="">-- Seleccione docente ausente --</option>
+                    </select>
+                  </div>
+
+                  <!-- Recursos -->
+                  <div class="form-group">
+                    <label class="form-label">
+                      ¿Se dejaron recursos / material?
+                    </label>
+                    <div class="radio-group">
+                      <label class="radio-label">
+                        <input type="radio" name="recursos" value="SI"> SI
+                      </label>
+                      <label class="radio-label">
+                        <input type="radio" name="recursos" value="NO" checked> NO
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Observación -->
+                  <div class="form-group full-width">
+                    <label class="form-label" for="observacion">
+                      Motivo / Observación <span class="required">*</span>
+                    </label>
+                    <textarea id="observacion" class="form-control" placeholder="Ej: Permiso médico, capacitación pedagógica, comisión institucional, etc." required style="min-height:52px;"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Horas Clase a Cubrir (Listado Interactivo) -->
+              <div class="card">
+                <div class="card-header" style="flex-wrap:wrap; gap:8px;">
+                  <div class="card-title">2. Horas Clase a Reemplazar</div>
+                  <div id="clases-summary-badge" class="badge badge-available" style="font-size:11.5px;">
+                    0 horas seleccionadas
+                  </div>
+                </div>
+
+                <!-- Barra de Herramientas de Selección Rápida -->
+                <div id="clases-quick-bar" style="display:none; margin-bottom:12px; padding:8px 10px; background:#f8fafc; border-radius:var(--radius-sm); border:1px solid var(--border); align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <label for="num-horas-input" style="font-size:12px; font-weight:600; color:var(--primary);">Horas clase a cubrir:</label>
+                    <input type="number" id="num-horas-input" class="form-control" min="1" max="10" value="1" style="width:65px; padding:3px 8px; font-size:12px;">
+                  </div>
+                  <div style="display:flex; gap:6px;">
+                    <button type="button" id="btn-select-all-clases" class="btn btn-secondary btn-sm" style="padding:3px 8px; font-size:11.5px;">
+                      <i class="fa-solid fa-check-double"></i> Todo el Día
+                    </button>
+                    <button type="button" id="btn-deselect-all-clases" class="btn btn-secondary btn-sm" style="padding:3px 8px; font-size:11.5px;">
+                      <i class="fa-solid fa-rotate-left"></i> Desmarcar
+                    </button>
+                  </div>
+                </div>
+
+                <div id="clases-loading" style="display: none; text-align: center; padding: 24px; color: var(--primary);">
+                  <i class="fa-solid fa-circle-notch fa-spin" style="margin-right:8px;"></i> Cargando horario de clases del docente...
+                </div>
+
+                <div id="clases-empty" style="text-align: center; padding: 30px 16px; color: var(--text-muted); background: #f8fafc; border-radius: var(--radius-sm); border: 1px dashed var(--border); font-size: 12.5px;">
+                  <i class="fa-solid fa-calendar-day" style="font-size: 24px; color: #94a3b8; display: block; margin-bottom: 8px;"></i>
+                  Seleccione una fecha y el docente ausente para cargar sus horas de clase correspondientes a ese día.
+                </div>
+
+                <!-- Lista de Tarjetas de Clases -->
+                <div id="clases-list-container"></div>
+
+                <!-- Alerta de Conflicto -->
+                <div id="contingencia-conflict-alert" class="full-width" style="display:none; background:#fef2f2; border:1.5px solid #ef4444; border-radius:6px; padding:10px 14px; margin-top:10px; color:#991b1b; font-size:12.5px;">
+                  <div style="font-weight:700; margin-bottom:2px; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Conflicto de Asignación Detectado:</span>
+                  </div>
+                  <div id="contingencia-conflict-text"></div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="form-actions full-width" style="margin-top: 14px; display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px solid var(--border); padding-top:12px;">
+                  <button type="button" id="btn-limpiar" class="btn btn-secondary" style="display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-rotate-left"></i> Limpiar Formulario
+                  </button>
+                  <button type="submit" id="btn-guardar-lote" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-floppy-disk"></i> <span id="btn-submit-text">Guardar Contingencias</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Columna Derecha: Panel de Docentes Disponibles para la Hora Seleccionada -->
+            <div class="card" style="position: sticky; top: 16px;">
+              <div class="card-header" style="flex-wrap:wrap; gap:6px;">
+                <div class="card-title">3. Docentes Disponibles</div>
+                <span class="badge badge-available"><i class="fa-solid fa-wand-magic-sparkles" style="margin-right:4px;"></i>Evaluación en Tiempo Real</span>
+              </div>
+
+              <!-- Indicador de Hora Clase Activa -->
+              <div id="active-hora-indicator" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:var(--radius-sm); padding:8px 12px; margin-bottom:10px; font-size:12px; color:var(--primary); font-weight:600; display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-bullseye" style="color:var(--primary-light);"></i>
+                <span id="active-hora-text">Seleccione una hora clase de la izquierda para ver reemplazos.</span>
+              </div>
+
+              <div id="candidates-loading" style="display: none; text-align: center; padding: 24px; color: var(--primary);">
+                <i class="fa-solid fa-circle-notch fa-spin" style="margin-right:8px;"></i> Buscando docentes libres para esta hora...
+              </div>
+
+              <div id="candidates-empty" style="text-align: center; padding: 28px 12px; color: var(--text-muted); background: #f8fafc; border-radius: var(--radius-sm); border: 1px dashed var(--border); font-size: 12px;">
+                Seleccione una hora clase de la lista para evaluar los docentes disponibles.
+              </div>
+
+              <div id="candidates-list" class="candidates-list" style="max-height: 540px; overflow-y: auto;"></div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js?v=2.4"></script>
+  <script src="js/app.js?v=2.4"></script>
+  <script src="js/registro.js?v=2.4"></script>
+</body>
+</html>

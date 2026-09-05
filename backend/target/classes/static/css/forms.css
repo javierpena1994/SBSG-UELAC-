@@ -1,0 +1,437 @@
+/* ==========================================================
+   SISTEMA DE GESTIÓN DE CONTINGENCIAS SBSG - FORMS CSS (COMPACT)
+   ========================================================== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-label .required {
+  color: var(--danger);
+}
+
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: #fff;
+  color: var(--text-primary);
+  transition: var(--transition);
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.15);
+}
+
+.form-control:disabled, .form-control[readonly] {
+  background-color: #edf2f7;
+  cursor: not-allowed;
+}
+
+textarea.form-control {
+  min-height: 60px;
+  resize: vertical;
+}
+
+/* Radio / Toggle Group */
+.radio-group {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Buttons Compact */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--primary-light);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary {
+  background-color: #edf2f7;
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.btn-success {
+  background-color: var(--success);
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background-color: #2f855a;
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #c53030;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 11.5px;
+}
+
+.btn-lg {
+  padding: 9px 18px;
+  font-size: 13.5px;
+}
+
+/* Candidate Replacement Cards List Compact */
+.candidates-container {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: #f8fafc;
+  padding: 12px;
+}
+
+.candidates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.candidates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* ==========================================================
+   CANDIDATE CARDS & LISTADO MULTI-HORA (SIMETRÍA & CUADRATURA PERFECTA)
+   ========================================================== */
+
+/* Tarjetas de Clases (Lado Izquierdo) */
+.clase-item-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background-color: #ffffff;
+  display: grid;
+  grid-template-columns: 20px 110px 1fr 180px;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  box-sizing: border-box;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.clase-item-card:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.clase-item-card.is-active {
+  border-color: var(--primary-light) !important;
+  background-color: #eff6ff !important;
+  box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.25);
+}
+
+.clase-item-card.is-assigned {
+  border-left: 4px solid var(--success) !important;
+}
+
+.clase-item-card.is-unassigned {
+  border-left: 4px solid var(--warning) !important;
+}
+
+.clase-item-card.is-unchecked {
+  opacity: 0.45;
+  background-color: #f8fafc;
+  border-left: 4px solid #cbd5e1 !important;
+}
+
+.clase-chk-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clase-time-box {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 110px;
+  box-sizing: border-box;
+}
+
+.clase-time-num {
+  font-weight: 800;
+  font-size: 11px;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.clase-time-hour {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.clase-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.clase-materia-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clase-curso-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.clase-right-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 180px;
+}
+
+.reemplazo-assigned-tag {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.reemplazo-assigned-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+.reemplazo-pending-tag {
+  background-color: #fffbeb;
+  border: 1px dashed #fcd34d;
+  color: #b45309;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tarjetas de Docentes Candidatos (Lado Derecho) */
+.candidate-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background-color: #ffffff;
+  display: grid;
+  grid-template-columns: 1fr 88px;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  box-sizing: border-box;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.candidate-card:hover {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.candidate-card.selected {
+  border-color: var(--primary-light);
+  background-color: #eff6ff;
+  box-shadow: 0 0 0 1.5px var(--primary-light);
+}
+
+.candidate-card.disabled {
+  opacity: 0.5;
+  background-color: #edf2f7;
+  cursor: not-allowed;
+}
+
+.candidate-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.candidate-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.candidate-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.5px 6px;
+  border-radius: var(--radius-full);
+  font-size: 9.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-available {
+  background-color: var(--success-light);
+  color: var(--success);
+  border: 1px solid #c6f6d5;
+}
+
+.badge-busy {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  border: 1px solid #fed7d7;
+}
+
+.badge-class {
+  background-color: #edf2f7;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.badge-workload {
+  background-color: #fefcbf;
+  color: #b7791f;
+  font-size: 9.5px;
+}
+
+.btn-select-candidate {
+  padding: 5px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary-light);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-select-candidate:hover {
+  background-color: var(--primary);
+}
+
+.candidate-card.selected .btn-select-candidate {
+  background-color: var(--success);
+}
+

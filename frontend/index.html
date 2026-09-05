@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Contingencias Docentes | SBSG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/tables.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Sidebar Navigation Centralizado -->
+    <aside id="app-sidebar" class="sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="page-title-group">
+          <h1>Panel de Control de Contingencias</h1>
+          <p>Automatización y gestión de reemplazos docentes institucionales</p>
+        </div>
+        <div class="top-bar-actions">
+          <a href="registro.html" class="btn btn-primary">
+            <i class="fa-solid fa-circle-plus" style="margin-right:6px;"></i> Registrar Reemplazo
+          </a>
+        </div>
+      </header>
+
+      <div class="content-container">
+        <!-- KPI Metrics Grid -->
+        <div class="metrics-grid">
+          <div class="stat-card">
+            <div class="stat-icon icon-blue"><i class="fa-solid fa-clipboard-check"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Total Contingencias</span>
+              <span class="stat-value" id="kpi-total-contingencias">-</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-gold"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Horas / Períodos Cubiertos</span>
+              <span class="stat-value" id="kpi-total-horas">-</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-green"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Cuerpo Docente</span>
+              <span class="stat-value" id="kpi-total-docentes">-</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-purple"><i class="fa-solid fa-calendar-days"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Franjas Horarias</span>
+              <span class="stat-value" id="kpi-total-franjas">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Banner -->
+        <div class="card" style="background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%); color: #fff; border:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h2 style="font-size:16px; font-weight:700; margin-bottom:4px;">¿Un docente necesita reemplazo hoy?</h2>
+              <p style="opacity:0.9; font-size:12.5px;">El sistema evalúa en tiempo real las horas libres de los profesores para asignación inmediata.</p>
+            </div>
+            <a href="registro.html" class="btn btn-secondary btn-sm" style="background:#fff; color:var(--primary); font-weight:700; border:none; padding:8px 16px; display:inline-flex; align-items:center; gap:8px;">
+              <span>Asignar Reemplazo Ahora</span> <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Recent Contingencies Table -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Últimas Contingencias Registradas</div>
+            <a href="historial.html" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+              <span>Ver Todo el Registro</span> <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Docente Ausente</th>
+                  <th>Docente Reemplazante</th>
+                  <th>Hora</th>
+                  <th>Curso</th>
+                  <th>Materia</th>
+                  <th style="text-align:center;">Recursos</th>
+                  <th style="text-align:center;">Períodos</th>
+                  <th>Observación</th>
+                </tr>
+              </thead>
+              <tbody id="recent-contingencias-tbody">
+                <tr>
+                  <td colspan="9" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                    Cargando contingencias recientes...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const [status, recientes, reporte] = await Promise.all([
+          API.getStatus(),
+          API.getContingenciasRecientes(),
+          API.getReporte()
+        ]);
+
+        document.getElementById('kpi-total-contingencias').textContent = status.totalContingencias || 0;
+        document.getElementById('kpi-total-docentes').textContent = status.totalDocentes || 0;
+        document.getElementById('kpi-total-franjas').textContent = status.totalFranjasHorarias || 0;
+        document.getElementById('kpi-total-horas').textContent = `${Math.round(reporte.totalPeriodos || 0)} h`;
+
+        const tbody = document.getElementById('recent-contingencias-tbody');
+        tbody.innerHTML = '';
+
+        if (!recientes || recientes.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:24px;">No hay registros cargados.</td></tr>';
+          return;
+        }
+
+        recientes.slice(0, 8).forEach(c => {
+          const tr = document.createElement('tr');
+          const isRecursosSi = c.recursos === 'SI';
+          const badgeRecursos = isRecursosSi
+            ? '<span class="badge badge-si">SI</span>'
+            : '<span class="badge badge-no">NO</span>';
+
+          tr.innerHTML = `
+            <td class="col-fecha">${App.formatFechaConDia(c.fecha, c.diaSemana)}</td>
+            <td class="col-docente col-docente-ausente">${c.docenteAusenteNombre || '-'}</td>
+            <td class="col-docente col-docente-reemplazo">${c.docenteReemplazoNombre || '-'}</td>
+            <td class="col-franja"><span class="badge-franja">${c.franjaHorariaEtiqueta || '-'}</span></td>
+            <td class="col-curso">${c.cursoNombre || '-'}</td>
+            <td class="col-materia">${c.materiaNombre || '-'}</td>
+            <td style="text-align:center;">${badgeRecursos}</td>
+            <td style="text-align:center; font-weight:700;">${Math.round(c.periodos || 1)} h</td>
+            <td class="col-obs">${c.observacion || '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        console.error('Error cargando dashboard:', err);
+      }
+    });
+  </script>
+</body>
+</html>

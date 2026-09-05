@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Materias | SBSG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/tables.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Sidebar Navigation Centralizado -->
+    <aside id="app-sidebar" class="sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="page-title-group">
+          <h1>Catálogo y Gestión de Materias</h1>
+          <p>Edite nombres de asignaturas, registre nuevas materias y administre la malla académica</p>
+        </div>
+        <div class="top-bar-actions">
+          <button type="button" id="btn-nueva-materia" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-plus"></i> Nueva Materia
+          </button>
+        </div>
+      </header>
+
+      <div class="content-container">
+        
+        <!-- Barra de Búsqueda y Filtro -->
+        <div class="filter-bar">
+          <div class="filter-item" style="flex-grow: 1;">
+            <label for="search-materia">Buscar Materia o Asignatura</label>
+            <input type="text" id="search-materia" class="form-control" placeholder="Buscar por nombre de materia (ej. Lengua, Matemática, Inglés, etc.)...">
+          </div>
+        </div>
+
+        <!-- Tabla de Materias -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight: 700; color: var(--primary);">Listado Oficial de Materias y Asignaturas</span>
+            <span id="total-materias-badge" class="badge" style="background:#ebf8ff; color:var(--primary); font-size:12px;">-</span>
+          </div>
+
+          <div class="table-responsive" style="border:none; border-radius:0;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 70px;">ID</th>
+                  <th>Nombre de la Asignatura / Materia</th>
+                  <th style="text-align:center; width: 170px;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="materias-tbody">
+                <tr>
+                  <td colspan="3" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                    Cargando materias...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal para Crear / Editar Materia -->
+  <div id="modal-materia" class="modal-backdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div class="modal-content" style="background:#fff; border-radius:8px; width:90%; max-width:500px; box-shadow:0 4px 12px rgba(0,0,0,0.2); overflow:hidden;">
+      <div class="modal-header" style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:#f8fafc;">
+        <div id="modal-materia-title" class="modal-title" style="font-weight:700; font-size:16px; color:var(--primary);">Registrar Nueva Materia</div>
+        <button type="button" class="btn-icon" id="btn-cerrar-modal" style="font-size: 16px; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="form-materia">
+        <div class="modal-body" style="padding:20px;">
+          <input type="hidden" id="materia-id">
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="materia-nombre" style="font-weight:600; margin-bottom:6px; display:block;">
+              Nombre de la Materia / Asignatura <span class="required" style="color:red;">*</span>
+            </label>
+            <input type="text" id="materia-nombre" class="form-control" placeholder="Ej: MATEMÁTICA, LENGUA Y LITERATURA, INGLÉS..." required style="text-transform:uppercase;">
+            <small style="color:var(--text-muted); font-size:12px; margin-top:4px; display:block;">
+              El nombre se guardará en mayúsculas automáticamente para mantener la consistencia institucional.
+            </small>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; background:#f8fafc;">
+          <button type="button" class="btn btn-secondary" id="btn-cancelar-materia">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-guardar-materia" style="display:inline-flex; align-items:center; gap:6px;"><i class="fa-solid fa-floppy-disk"></i> Guardar Materia</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/materias.js"></script>
+</body>
+</html>

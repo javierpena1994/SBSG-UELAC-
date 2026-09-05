@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor de Horarios y Disponibilidad | SBSG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/tables.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Sidebar Navigation Centralizado -->
+    <aside id="app-sidebar" class="sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="page-title-group">
+          <h1>Editor de Horarios por Docente (Año Lectivo)</h1>
+          <p>Consulte y configure las materias, cursos y horas libres de cada docente para el año escolar</p>
+        </div>
+      </header>
+
+      <div class="content-container">
+        
+        <!-- Tarjeta del Editor Interactivo -->
+        <div class="card">
+          <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+            
+            <!-- Selector de Docente -->
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <label for="select-docente-editor" style="font-weight: 700; color: var(--primary);">Seleccionar Docente:</label>
+              <select id="select-docente-editor" class="form-control" style="min-width: 280px; max-width: 380px;">
+                <option value="">Cargando docentes...</option>
+              </select>
+            </div>
+            
+            <!-- Acciones -->
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <div id="autosave-indicator" style="font-size: 12px; color: #16a34a; font-weight: 600; display: flex; align-items: center; gap: 6px; background: #f0fdf4; padding: 4px 10px; border-radius: 20px; border: 1px solid #bbf7d0;">
+                <i class="fa-solid fa-circle-check"></i> Autoguardado activo
+              </div>
+              <button type="button" id="btn-marcar-todos" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-check-double"></i> Marcar Todas Disponibles
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestañas de Vista por Sección (Escuela vs Colegio) -->
+          <div id="seccion-filter-bar" style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary btn-sm seccion-tab" data-seccion="ESCUELA" style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-school"></i> Jornada Escuela (Inicial a 7° EGB)
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm seccion-tab" data-seccion="COLEGIO" style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-graduation-cap"></i> Jornada Colegio (8° EGB a 3° BGU)
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm seccion-tab" data-seccion="TODAS" style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-table-cells"></i> Vista Completa Combinada
+            </button>
+          </div>
+
+          <div style="margin-bottom: 12px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+            <div style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-lightbulb" style="color:var(--secondary);"></i> <em>Haz clic sobre cualquier celda para <strong>editar la materia, curso, actividad o alternar entre OCUPADO y DISPONIBLE</strong>.</em>
+            </div>
+            <div id="slots-count-badge" class="badge badge-available">
+              0 horas configuradas
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table schedule-matrix-table">
+              <thead>
+                <tr>
+                  <th style="min-width: 160px;">Periodo / Franja</th>
+                  <th style="text-align:center; min-width: 110px;">Lunes</th>
+                  <th style="text-align:center; min-width: 110px;">Martes</th>
+                  <th style="text-align:center; min-width: 110px;">Miércoles</th>
+                  <th style="text-align:center; min-width: 110px;">Jueves</th>
+                  <th style="text-align:center; min-width: 110px;">Viernes</th>
+                </tr>
+              </thead>
+              <tbody id="interactive-schedule-tbody">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="margin-right:8px;"></i> Cargando horario...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Mantenimiento de Año Lectivo -->
+        <div class="card" style="background: #f8fafc; border: 1px dashed var(--border); margin-top: 16px;">
+          <div class="card-header">
+            <div class="card-title">Mantenimiento de Horarios por Inicio de Año Lectivo</div>
+          </div>
+          <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
+            Al iniciar un nuevo año escolar, puede reiniciar los horarios para configurarlos desde cero o restaurar la malla inicial:
+          </p>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="btn-reset-all-schedules" class="btn btn-danger btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Limpiar Malla de Horarios de Todos los Docentes
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal de Edición de Celda / Horario -->
+  <div id="modal-edit-slot" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div class="card" style="width:100%; max-width:480px; margin:20px; box-shadow:0 10px 25px rgba(0,0,0,0.3);">
+      <div class="card-header">
+        <div class="card-title" id="modal-slot-title">Editar Bloque de Horario</div>
+        <button type="button" id="btn-close-modal" style="background:none; border:none; font-size:18px; cursor:pointer; color:#64748b;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div style="padding:16px 20px;">
+        
+        <div style="margin-bottom:12px;">
+          <label style="font-weight:700; font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Estado de Asignación:</label>
+          <div style="display:flex; gap:16px;">
+            <label style="font-size:13px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="radio" name="modal-tipo" value="ocupado" checked> <strong>Ocupado</strong>
+            </label>
+            <label style="font-size:13px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="radio" name="modal-tipo" value="disponible"> <strong>Disponible</strong>
+            </label>
+          </div>
+        </div>
+
+        <div id="modal-field-materia" class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" for="modal-materia">Materia / Asignatura:</label>
+          <select id="modal-materia" class="form-control">
+            <option value="">-- Sin materia asignada --</option>
+          </select>
+        </div>
+
+        <div id="modal-field-curso" class="form-group" style="margin-bottom:12px;">
+          <label class="form-label" for="modal-curso">Curso / Grado:</label>
+          <select id="modal-curso" class="form-control">
+            <option value="">-- Sin curso / General --</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label" for="modal-actividad">Descripción / Actividad (Opcional):</label>
+          <input type="text" id="modal-actividad" class="form-control" placeholder="Ej: MISA, Atención a PPFF, Guardia, etc.">
+          <small style="color:var(--text-muted); font-size:11.5px; margin-top:4px; display:block;">
+            💡 Solo para casos fortuitos o específicos sin materia (si elige una materia arriba, la materia predominará automáticamente).
+          </small>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" id="btn-cancel-modal" class="btn btn-secondary btn-sm">Cancelar</button>
+          <button type="button" id="btn-apply-modal" class="btn btn-primary btn-sm" style="display:inline-flex; align-items:center; gap:6px;"><i class="fa-solid fa-check"></i> Aplicar al Horario</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js?v=2.2"></script>
+  <script src="js/app.js?v=2.2"></script>
+  <script src="js/horarios.js?v=2.2"></script>
+</body>
+</html>
