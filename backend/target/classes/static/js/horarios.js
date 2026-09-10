@@ -104,7 +104,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         { tipo: 'clase', etiqueta: '10h20 - 11h00', titulo: '5° Hora Escuela (10h20 - 11h00)' },
         { tipo: 'clase', etiqueta: '11h00 - 11h40', titulo: '6° Hora (11h00 - 11h40)' },
         { tipo: 'clase', etiqueta: '11h40 - 12h20', titulo: '7° Hora (11h40 - 12h20)' },
-        { tipo: 'clase', etiqueta: '12h20 - 13h00', titulo: '8° Hora (12h20 - 13h00 / Salida Escuela)' }
+        { tipo: 'clase', etiqueta: '12h20 - 13h00', titulo: '8° Hora (12h20 - 13h00 / Salida Escuela)' },
+        { tipo: 'clase', etiqueta: '13h40 - 14h20', titulo: '9° Hora (13h40 - 14h20 / Salida Docentes)' }
       ];
     } else if (currentSeccion === 'COLEGIO') {
       rowsConfig = [

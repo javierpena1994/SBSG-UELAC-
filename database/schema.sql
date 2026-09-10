@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS cursos (
 -- 3. Tabla de Materias / Asignaturas
 CREATE TABLE IF NOT EXISTS materias (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(150) NOT NULL UNIQUE
+    nombre VARCHAR(150) NOT NULL UNIQUE,
+    aplica_examen BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB;
 
 -- 4. Tabla de Franjas Horarias

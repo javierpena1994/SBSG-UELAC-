@@ -54,6 +54,37 @@ public class HorarioExamenController {
         return ResponseEntity.ok(horarioExamenService.guardarConfiguracionMateriasCurso(cursoId, materias));
     }
 
+    @PutMapping("/curso/{cursoId}/materia/{materiaId}")
+    public ResponseEntity<MateriaEvaluacionDTO> actualizarConfiguracionMateria(
+            @PathVariable Long cursoId,
+            @PathVariable Long materiaId,
+            @RequestParam(required = false) Boolean tomaExamen,
+            @RequestParam(required = false) String dificultad,
+            @RequestBody(required = false) Map<String, Object> body) {
+
+        Boolean toma = tomaExamen;
+        String dif = dificultad;
+
+        if (body != null) {
+            if (toma == null && body.containsKey("tomaExamen")) {
+                Object val = body.get("tomaExamen");
+                if (val instanceof Boolean) toma = (Boolean) val;
+                else if (val != null) toma = Boolean.parseBoolean(val.toString());
+            }
+            if (dif == null && body.containsKey("dificultad")) {
+                Object val = body.get("dificultad");
+                if (val != null) dif = val.toString();
+            }
+            if (dif == null && body.containsKey("tipoComplejidad")) {
+                Object val = body.get("tipoComplejidad");
+                if (val != null) dif = val.toString();
+            }
+        }
+
+        MateriaEvaluacionDTO updated = horarioExamenService.actualizarConfiguracionMateriaCurso(cursoId, materiaId, toma, dif);
+        return ResponseEntity.ok(updated);
+    }
+
     @PostMapping("/curso-materias/{cursoId}/asignar")
     public ResponseEntity<MateriaEvaluacionDTO> asignarMateria(
             @PathVariable Long cursoId,

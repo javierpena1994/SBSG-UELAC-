@@ -3,12 +3,385 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Materias | SBSG</title>
+  <title>Configuración de Materias y Exámenes | SBSG</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/forms.css">
   <link rel="stylesheet" href="css/tables.css">
+  <style>
+    /* Pestañas Principales */
+    .tabs-nav {
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      margin-bottom: -2px;
+    }
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: rgba(30, 58, 138, 0.04);
+      border-radius: 6px 6px 0 0;
+    }
+
+    /* Pastillas / Pills de Cursos */
+    .course-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .course-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .course-pill:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    .course-pill.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 6px rgba(30, 58, 138, 0.25);
+    }
+
+    /* Tarjetas de Métricas Rápidas */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .metric-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .metric-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .metric-val {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .metric-lbl {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Filas de Materias por Curso */
+    .materia-card-row {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.18s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .materia-card-row:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+      transform: translateY(-1px);
+    }
+    .materia-card-row.inactive-row {
+      background: #f8fafc;
+      opacity: 0.75;
+      border-left: 4px solid #cbd5e1;
+    }
+    .materia-card-row.active-row {
+      border-left: 4px solid #10b981;
+    }
+
+    .materia-left-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+      min-width: 0;
+    }
+    .materia-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .materia-avatar.dificil {
+      background: #fef2f2;
+      color: #ef4444;
+    }
+    .materia-avatar.facil {
+      background: #ecfdf5;
+      color: #10b981;
+    }
+    .materia-avatar.inactiva {
+      background: #f1f5f9;
+      color: #94a3b8;
+    }
+
+    .materia-title-group {
+      min-width: 0;
+    }
+    .materia-nombre-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .materia-badges-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .docente-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #f8fafc;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      font-weight: 600;
+    }
+    .horas-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* Controles a la Derecha del Nombre */
+    .materia-right-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    /* Switch iOS */
+    .switch-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: 1px solid #e2e8f0;
+    }
+    .switch-label-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .switch-ios {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      margin: 0;
+    }
+    .switch-ios input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .22s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .22s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+    input:checked + .slider {
+      background-color: #10b981;
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    .switch-text-val {
+      font-size: 12px;
+      font-weight: 800;
+      min-width: 24px;
+    }
+    .switch-text-val.val-si {
+      color: #059669;
+    }
+    .switch-text-val.val-no {
+      color: #64748b;
+    }
+
+    /* Botón 1-Click Dificultad */
+    .btn-dificultad-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 24px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      min-width: 110px;
+      justify-content: center;
+    }
+    .btn-dificultad-toggle.btn-dificil {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+    .btn-dificultad-toggle.btn-dificil:hover {
+      background: #fee2e2;
+      border-color: #f87171;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+      transform: translateY(-1px);
+    }
+    .btn-dificultad-toggle.btn-facil {
+      background: #ecfdf5;
+      color: #059669;
+      border-color: #a7f3d0;
+    }
+    .btn-dificultad-toggle.btn-facil:hover {
+      background: #d1fae5;
+      border-color: #6ee7b7;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+      transform: translateY(-1px);
+    }
+    .btn-dificultad-toggle:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+      background: #f1f5f9 !important;
+      color: #94a3b8 !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    /* Guardado Animado */
+    .save-indicator {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #10b981;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .save-indicator.show {
+      opacity: 1;
+    }
+
+    /* Botón Catálogo Legacy */
+    .btn-toggle-examen {
+      border: 1px solid transparent;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+      user-select: none;
+    }
+    .btn-toggle-examen.active {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+    .btn-toggle-examen.active:hover {
+      background: #d1fae5;
+      box-shadow: 0 2px 4px rgba(4, 120, 87, 0.15);
+    }
+    .btn-toggle-examen.inactive {
+      background: #f8fafc;
+      color: #64748b;
+      border-color: #cbd5e1;
+    }
+    .btn-toggle-examen.inactive:hover {
+      background: #f1f5f9;
+      color: #334155;
+      box-shadow: 0 2px 4px rgba(100, 116, 139, 0.15);
+    }
+  </style>
 </head>
 <body>
   <div class="app-wrapper">
@@ -19,58 +392,195 @@
     <main class="main-content">
       <header class="top-bar">
         <div class="page-title-group">
-          <h1>Catálogo y Gestión de Materias</h1>
-          <p>Edite nombres de asignaturas, registre nuevas materias y administre la malla académica</p>
+          <h1>Configuración de Materias y Exámenes</h1>
+          <p>Configure por curso qué materias rinden examen y defina su dificultad con 1 solo clic</p>
         </div>
-        <div class="top-bar-actions">
-          <button type="button" id="btn-nueva-materia" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:6px;">
-            <i class="fa-solid fa-plus"></i> Nueva Materia
+        <div class="top-bar-actions" style="display:flex; gap:10px; align-items:center;">
+          <a href="examenes.html" class="btn btn-primary" style="background:#7c3aed; border-color:#7c3aed; display:inline-flex; align-items:center; gap:8px; font-weight:700;">
+            <i class="fa-solid fa-dice"></i> Ir a Generación de Horarios
+          </a>
+          <button type="button" id="btn-nueva-materia" class="btn btn-secondary" style="display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-plus"></i> Nueva Asignatura
           </button>
         </div>
       </header>
 
       <div class="content-container">
         
-        <!-- Barra de Búsqueda y Filtro -->
-        <div class="filter-bar">
-          <div class="filter-item" style="flex-grow: 1;">
-            <label for="search-materia">Buscar Materia o Asignatura</label>
-            <input type="text" id="search-materia" class="form-control" placeholder="Buscar por nombre de materia (ej. Lengua, Matemática, Inglés, etc.)...">
-          </div>
+        <!-- Pestañas de Navegación -->
+        <div class="tabs-nav">
+          <button type="button" class="tab-btn active" id="tab-btn-curso" onclick="window.cambiarPestana('curso')">
+            <i class="fa-solid fa-sliders"></i> Configuración por Curso (Para Exámenes)
+          </button>
+          <button type="button" class="tab-btn" id="tab-btn-catalogo" onclick="window.cambiarPestana('catalogo')">
+            <i class="fa-solid fa-book"></i> Catálogo General de Materias
+          </button>
         </div>
 
-        <!-- Tabla de Materias -->
-        <div class="card" style="padding: 0; overflow: hidden;">
-          <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight: 700; color: var(--primary);">Listado Oficial de Materias y Asignaturas</span>
-            <span id="total-materias-badge" class="badge" style="background:#ebf8ff; color:var(--primary); font-size:12px;">-</span>
+        <!-- ==============================================================
+             PESTAÑA 1: CONFIGURACIÓN POR CURSO (ALIMENTADO DEL HORARIO)
+             ============================================================== -->
+        <div id="tab-content-curso">
+          
+          <!-- Card Selector de Curso -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+              <div>
+                <label for="select-curso-config" style="font-weight:700; font-size:14px; color:var(--primary); display:inline-flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-graduation-cap"></i> Seleccione el Curso a Configurar:
+                </label>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                  Las materias mostradas se derivan exactamente del <strong>horario real alimentado</strong> del curso.
+                </div>
+              </div>
+
+              <!-- Selector desplegable -->
+              <div style="min-width: 260px;">
+                <select id="select-curso-config" class="form-control" style="font-weight:700; color:var(--primary);">
+                  <option value="">Cargando cursos...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Accesos rápidos por pastillas / pills -->
+            <div>
+              <div style="font-size:11.5px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.4px;">
+                Acceso rápido por curso:
+              </div>
+              <div class="course-pills" id="course-pills-container">
+                <!-- Se genera dinámicamente -->
+              </div>
+            </div>
           </div>
 
-          <div class="table-responsive" style="border:none; border-radius:0;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width: 70px;">ID</th>
-                  <th>Nombre de la Asignatura / Materia</th>
-                  <th style="text-align:center; width: 170px;">Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="materias-tbody">
-                <tr>
-                  <td colspan="3" style="text-align:center; padding: 24px; color: var(--text-muted);">
-                    Cargando materias...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- Métricas del Curso Seleccionado -->
+          <div class="metrics-grid" id="curso-metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon" style="background:#eff6ff; color:#2563eb;">
+                <i class="fa-solid fa-list-check"></i>
+              </div>
+              <div>
+                <div class="metric-val" id="metric-total-materias" style="color:#1e3a8a;">0</div>
+                <div class="metric-lbl">Total Materias</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon" style="background:#ecfdf5; color:#059669;">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div>
+                <div class="metric-val" id="metric-toman-examen" style="color:#059669;">0</div>
+                <div class="metric-lbl">Rinden Examen</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon" style="background:#fef2f2; color:#dc2626;">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+              <div>
+                <div class="metric-val" id="metric-dificiles" style="color:#dc2626;">0</div>
+                <div class="metric-lbl">Difíciles</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon" style="background:#f0fdf4; color:#16a34a;">
+                <i class="fa-solid fa-feather"></i>
+              </div>
+              <div>
+                <div class="metric-val" id="metric-faciles" style="color:#16a34a;">0</div>
+                <div class="metric-lbl">Fáciles</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon" style="background:#f8fafc; color:#64748b;">
+                <i class="fa-solid fa-ban"></i>
+              </div>
+              <div>
+                <div class="metric-val" id="metric-no-examen" style="color:#64748b;">0</div>
+                <div class="metric-lbl">Sin Examen</div>
+              </div>
+            </div>
           </div>
+
+          <!-- Encabezado de la Lista de Materias -->
+          <div class="card" style="padding: 0; overflow:hidden;">
+            <div style="padding: 14px 20px; background:#f8fafc; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>
+                <span id="curso-list-title" style="font-weight: 800; font-size:15px; color: var(--primary);">
+                  Materias del Curso
+                </span>
+                <span id="curso-materias-count-badge" class="badge" style="background:#dbeafe; color:#1e40af; font-size:12px; margin-left:8px;">0 materias</span>
+              </div>
+              <div style="font-size:12px; color:#059669; display:inline-flex; align-items:center; gap:6px; font-weight:600;">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Auto-guardado instantáneo al hacer clic</span>
+              </div>
+            </div>
+
+            <!-- Contenedor de la Lista -->
+            <div id="lista-materias-curso-container" style="padding: 16px 20px;">
+              <div style="text-align:center; padding: 40px 20px; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:24px; color:var(--primary); margin-bottom:10px;"></i>
+                <div>Cargando asignaturas del curso...</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==============================================================
+             PESTAÑA 2: CATÁLOGO GENERAL DE MATERIAS
+             ============================================================== -->
+        <div id="tab-content-catalogo" style="display: none;">
+          
+          <!-- Barra de Búsqueda y Filtro -->
+          <div class="filter-bar">
+            <div class="filter-item" style="flex-grow: 1;">
+              <label for="search-materia">Buscar Asignatura en Catálogo General</label>
+              <input type="text" id="search-materia" class="form-control" placeholder="Buscar por nombre (ej. Lengua, Matemática, Inglés, etc.)...">
+            </div>
+          </div>
+
+          <!-- Tabla de Materias -->
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight: 700; color: var(--primary);">Listado Oficial del Catálogo de Materias</span>
+              <span id="total-materias-badge" class="badge" style="background:#ebf8ff; color:var(--primary); font-size:12px;">-</span>
+            </div>
+
+            <div class="table-responsive" style="border:none; border-radius:0;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th>Nombre de la Asignatura / Materia</th>
+                    <th style="text-align:center; width: 180px;">¿Aplica Examen General?</th>
+                    <th style="text-align:center; width: 170px;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="materias-tbody">
+                  <tr>
+                    <td colspan="4" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                      Cargando materias...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
 
       </div>
     </main>
   </div>
 
-  <!-- Modal para Crear / Editar Materia -->
+  <!-- Modal para Crear / Editar Materia en Catálogo -->
+
   <div id="modal-materia" class="modal-backdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
     <div class="modal-content" style="background:#fff; border-radius:8px; width:90%; max-width:500px; box-shadow:0 4px 12px rgba(0,0,0,0.2); overflow:hidden;">
       <div class="modal-header" style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:#f8fafc;">
@@ -89,6 +599,16 @@
             <input type="text" id="materia-nombre" class="form-control" placeholder="Ej: MATEMÁTICA, LENGUA Y LITERATURA, INGLÉS..." required style="text-transform:uppercase;">
             <small style="color:var(--text-muted); font-size:12px; margin-top:4px; display:block;">
               El nombre se guardará en mayúsculas automáticamente para mantener la consistencia institucional.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid var(--border);">
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:600; font-size:13.5px; color:var(--text); margin-bottom:0;">
+              <input type="checkbox" id="materia-aplica-examen" checked style="width:18px; height:18px; cursor:pointer; accent-color:var(--primary);">
+              <span>¿Se toma examen formal de esta materia?</span>
+            </label>
+            <small style="color:var(--text-muted); font-size:12px; margin-top:5px; display:block; padding-left: 28px;">
+              Deje marcado para asignaturas académicas. Desmarque para actividades no evaluables como Biblioteca, Tutoría, Atención a PPFF, Misa, OVP, etc.
             </small>
           </div>
         </div>

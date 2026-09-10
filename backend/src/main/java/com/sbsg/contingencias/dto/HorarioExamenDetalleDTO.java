@@ -14,11 +14,19 @@ public class HorarioExamenDetalleDTO {
     private String horaInicio;
     private String horaFin;
     private String docenteSupervisor;
+    private Long cursoId;
+    private String cursoNombre;
 
     public HorarioExamenDetalleDTO() {}
 
     public HorarioExamenDetalleDTO(Long id, Integer diaNumero, LocalDate fecha, String diaSemana, Integer ordenDia, Long materiaId, String materiaNombre, String tipoComplejidad, String horaInicio, String horaFin, String docenteSupervisor) {
+        this(id, null, null, diaNumero, fecha, diaSemana, ordenDia, materiaId, materiaNombre, tipoComplejidad, horaInicio, horaFin, docenteSupervisor);
+    }
+
+    public HorarioExamenDetalleDTO(Long id, Long cursoId, String cursoNombre, Integer diaNumero, LocalDate fecha, String diaSemana, Integer ordenDia, Long materiaId, String materiaNombre, String tipoComplejidad, String horaInicio, String horaFin, String docenteSupervisor) {
         this.id = id;
+        this.cursoId = cursoId;
+        this.cursoNombre = cursoNombre;
         this.diaNumero = diaNumero;
         this.fecha = fecha;
         this.diaSemana = diaSemana;
@@ -117,6 +125,30 @@ public class HorarioExamenDetalleDTO {
 
     public void setDocenteSupervisor(String docenteSupervisor) {
         this.docenteSupervisor = docenteSupervisor;
+    }
+
+    public String getDocenteNombre() {
+        return docenteSupervisor;
+    }
+
+    public void setDocenteNombre(String docenteNombre) {
+        this.docenteSupervisor = docenteNombre;
+    }
+
+    public Long getCursoId() {
+        return cursoId;
+    }
+
+    public void setCursoId(Long cursoId) {
+        this.cursoId = cursoId;
+    }
+
+    public String getCursoNombre() {
+        return cursoNombre;
+    }
+
+    public void setCursoNombre(String cursoNombre) {
+        this.cursoNombre = cursoNombre;
     }
 }
 

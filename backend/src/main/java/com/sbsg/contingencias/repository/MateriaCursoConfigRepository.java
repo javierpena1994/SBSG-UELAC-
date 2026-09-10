@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface MateriaCursoConfigRepository extends JpaRepository<MateriaCursoConfig, Long> {
+    List<MateriaCursoConfig> findByCursoId(Long cursoId);
     List<MateriaCursoConfig> findByCursoIdAndActivoTrue(Long cursoId);
     Optional<MateriaCursoConfig> findByCursoIdAndMateriaId(Long cursoId, Long materiaId);
 }

@@ -88,6 +88,14 @@ public class DatabaseConfig {
         ds.setUsername(dbUsername);
         ds.setPassword(dbPassword);
         ds.setMaximumPoolSize(10);
+
+        try (java.sql.Connection conn = ds.getConnection(); java.sql.Statement stmt = conn.createStatement()) {
+            stmt.execute("ALTER TABLE IF EXISTS materias ADD COLUMN IF NOT EXISTS aplica_examen BOOLEAN DEFAULT TRUE");
+            log.info("Verificación de columna aplica_examen completada con éxito.");
+        } catch (Exception e) {
+            log.warn("Nota sobre verificación de esquema: {}", e.getMessage());
+        }
+
         return ds;
     }
 }

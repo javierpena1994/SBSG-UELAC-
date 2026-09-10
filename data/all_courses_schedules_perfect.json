@@ -1,0 +1,1310 @@
+{
+  "Inicial 2": {
+    "curso": "Inicial 2",
+    "tutor": "Lcda. Lucy Rivera",
+    "grid": [
+      {
+        "hora": "07h30 - 07h50",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "Comprensión Oral y  Escrita",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Comprensión Oral y  Escrita",
+        "Martes": "Relaciones Lógico Matemáticas",
+        "Miércoles": "Inglés",
+        "Jueves": "Comprensión Ora y  Escrita",
+        "Viernes": "Relaciones Lógico Matemáticas"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Religión",
+        "Martes": "Robótica",
+        "Miércoles": "-",
+        "Jueves": "Inglés",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "Inglés",
+        "Martes": "Descubrimiento Entorno Natural",
+        "Miércoles": "Identidad y Autonomía",
+        "Jueves": "Biblioteca",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "Relaciones Lógico Matemáticas",
+        "Martes": "Comprensión Oral y  Escrita",
+        "Miércoles": "Relaciones Lógico Matemáticas",
+        "Jueves": "Convivencia",
+        "Viernes": "Comprensión Oral y  Escrita"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Ed. Física",
+        "Martes": "-",
+        "Miércoles": "Ed. Física ECA",
+        "Jueves": "Relaciones Lógico Matemáticas",
+        "Viernes": "TUTORÍA"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Descubrimiento Entorno Natural",
+        "Martes": "-",
+        "Miércoles": "Religión",
+        "Jueves": "Descubrimiento Entorno Natural",
+        "Viernes": "Inglés"
+      }
+    ]
+  },
+  "Primero EGB": {
+    "curso": "Primero EGB",
+    "tutor": "Lcda. Fátima Saavedra",
+    "grid": [
+      {
+        "hora": "07h30 - 07h50",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Relaciones Lógico Matemáticas",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "Relaciones Lógico Matemáticas"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Inglés",
+        "Martes": "-",
+        "Miércoles": "ECA Relaciones Lógico Matemáticas",
+        "Jueves": "Comprensión Oral y  Escrita",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Ed. Física",
+        "Martes": "Comprensión Oral y  Escrita",
+        "Miércoles": "Descubrimiento Entorno Natural",
+        "Jueves": "Relaciones Lógico Matemáticas",
+        "Viernes": "Descubrimiento Entorno Natural"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "Religión",
+        "Martes": "Robótica",
+        "Miércoles": "Ed. Física",
+        "Jueves": "Identidad y Autonomía",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "Religión",
+        "Jueves": "Biblioteca",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Comprensión Oral y  Escrita",
+        "Martes": "Relaciones Lógico Matemáticas",
+        "Miércoles": "Inglés",
+        "Jueves": "-",
+        "Viernes": "Comprensión Oral y  Escrita"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Descubrimiento Entorno Natural",
+        "Martes": "Convivencia",
+        "Miércoles": "Comprensión Oral y  Escrita",
+        "Jueves": "-",
+        "Viernes": "TUTORÍA"
+      },
+      {
+        "hora": "13h00 - 13h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Segundo EGB": {
+    "curso": "Segundo EGB",
+    "tutor": "Lcda. Lissette Ley",
+    "grid": [
+      {
+        "hora": "07h00 - 07h10",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "-",
+        "Martes": "Ciencias Naturales",
+        "Miércoles": "Estudios Sociales",
+        "Jueves": "Lengua y",
+        "Viernes": "Estudios Sociales"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Matemática",
+        "Martes": "-",
+        "Miércoles": "ECA Ed. Física",
+        "Jueves": "Literatura",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Ed. Física",
+        "Martes": "Lengua y",
+        "Miércoles": "MISA",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Inglés",
+        "Martes": "Literatura",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "ROBÓTICA",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "Inglés",
+        "Miércoles": "-",
+        "Jueves": "Estudios Sociales",
+        "Viernes": "Ciencias Naturales"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "STEAM",
+        "Jueves": "Inglés",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Religión",
+        "Martes": "Matemática",
+        "Miércoles": "ECA",
+        "Jueves": "Matemática",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Ciencias Naturales",
+        "Martes": "Catequesis",
+        "Miércoles": "Matemática",
+        "Jueves": "Biblioteca",
+        "Viernes": "Tutoría"
+      },
+      {
+        "hora": "13h00 - 13h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Tercero EGB": {
+    "curso": "Tercero EGB",
+    "tutor": "Lcda. Mercedes Carbo",
+    "grid": [
+      {
+        "hora": "07h00 - 07h10",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "-",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "Matemática",
+        "Jueves": "Estudios Sociales",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Matemática",
+        "Martes": "Inglés",
+        "Miércoles": "Inglés",
+        "Jueves": "Lengua y",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "ECA",
+        "Martes": "Inglés",
+        "Miércoles": "MISA",
+        "Jueves": "Literatura",
+        "Viernes": "Ciencias Naturales"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Ciencias Naturales",
+        "Martes": "Estudios Sociales",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "ECA",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "-",
+        "Miércoles": "Catequesis",
+        "Jueves": "Inglés",
+        "Viernes": "Lengua y"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "Ed. Física",
+        "Martes": "Matemática",
+        "Miércoles": "Biblioteca",
+        "Jueves": "Matemática",
+        "Viernes": "Literatura"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Estudios Sociales",
+        "Martes": "-",
+        "Miércoles": "Ciencias Naturales",
+        "Jueves": "-",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Religión",
+        "Martes": "ROBÓTICA",
+        "Miércoles": "Ed. Física",
+        "Jueves": "STEAM",
+        "Viernes": "Tutoría"
+      },
+      {
+        "hora": "13h00 - 13h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Cuarto EGB": {
+    "curso": "Cuarto EGB",
+    "tutor": "Lcda. Gabriela Moreno",
+    "grid": [
+      {
+        "hora": "07h00 - 07h10",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "Inglés",
+        "Viernes": "Lengua y"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Inglés",
+        "Martes": "Matemática",
+        "Miércoles": "ROBÓTICA",
+        "Jueves": "Inglés",
+        "Viernes": "Literatura"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "MISA",
+        "Jueves": "ECA",
+        "Viernes": "ECA"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Matemática",
+        "Martes": "STEAM",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "Matemática",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "Ed. Física",
+        "Martes": "Religión",
+        "Miércoles": "Ed. Física",
+        "Jueves": "Ciencias Naturales",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "Ciencias Naturales",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "Inglés",
+        "Jueves": "Catequesis",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Estudios",
+        "Martes": "Estudios Sociales",
+        "Miércoles": "Matemática",
+        "Jueves": "Lengua y",
+        "Viernes": "Tutoría"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Sociales",
+        "Martes": "Ciencias Naturales",
+        "Miércoles": "Biblioteca",
+        "Jueves": "Literatura",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "13h00 - 13h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Quinto EGB": {
+    "curso": "Quinto EGB",
+    "tutor": "Lcda. Lupe Domínguez",
+    "grid": [
+      {
+        "hora": "07h00 - 07h10",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Estudios Sociales",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "ECA",
+        "Martes": "ROBÓTICA",
+        "Miércoles": "Matemática",
+        "Jueves": "STEAM",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Matemática",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "MISA",
+        "Jueves": "Matemática",
+        "Viernes": "-"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Ciencias Naturales",
+        "Martes": "-",
+        "Miércoles": "DP Estudios Sociales",
+        "Jueves": "Ciencias Naturales",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "Lengua y",
+        "Martes": "Biblioteca",
+        "Miércoles": "Inglés",
+        "Jueves": "-",
+        "Viernes": "DP Ciencias Naturales"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "Literatura",
+        "Martes": "Religión",
+        "Miércoles": "Ed. Física",
+        "Jueves": "Lengua y Literatura",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Ed. Física",
+        "Martes": "-",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "Estudios Sociales",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Inglés",
+        "Martes": "Inglés",
+        "Miércoles": "ECA",
+        "Jueves": "Catequesis",
+        "Viernes": "Tutoría"
+      },
+      {
+        "hora": "13h00 - 13h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Sexto EGB": {
+    "curso": "Sexto EGB",
+    "tutor": "Lcda. Anabel Falcones",
+    "grid": [
+      {
+        "hora": "07h00 - 07h10",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "Matemática",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "Ciencias Naturales"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "-",
+        "Martes": "DP Biblioteca",
+        "Miércoles": "STEAM",
+        "Jueves": "Matemática",
+        "Viernes": "Estudios Sociales"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Ciencias Naturales",
+        "Martes": "Estudios Sociales",
+        "Miércoles": "MISA",
+        "Jueves": "-",
+        "Viernes": "DP Inglés"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Ed. Física",
+        "Martes": "Inglés",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "Catequesis",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "ECA",
+        "Martes": "Ciencias Naturales",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "Lengua y"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "Inglés",
+        "Martes": "ECA",
+        "Miércoles": "Matemática",
+        "Jueves": "ROBÓTICA",
+        "Viernes": "Literatura"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Inglés",
+        "Martes": "Religión",
+        "Miércoles": "Ed. Física",
+        "Jueves": "Lengua y Literatura",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Matemática",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "Inglés",
+        "Jueves": "Estudios Sociales",
+        "Viernes": "Tutoría"
+      },
+      {
+        "hora": "13h00 - 13h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Séptimo EGB": {
+    "curso": "Séptimo EGB",
+    "tutor": "Lcda. Lelis Fernandez",
+    "grid": [
+      {
+        "hora": "07h00 - 07h10",
+        "Lunes": "ENTRADA",
+        "Martes": "ENTRADA",
+        "Miércoles": "ENTRADA",
+        "Jueves": "ENTRADA",
+        "Viernes": "ENTRADA"
+      },
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Matemática",
+        "Martes": "Biblioteca",
+        "Miércoles": "Ed. Física",
+        "Jueves": "Estudios Sociales",
+        "Viernes": "-"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Ed. Física",
+        "Martes": "Inglés",
+        "Miércoles": "Ciencias Naturales",
+        "Jueves": "-",
+        "Viernes": "DP Matemática"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Lengua y",
+        "Martes": "-",
+        "Miércoles": "MISA",
+        "Jueves": "Lengua y",
+        "Viernes": "Ed. Física"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Literatura",
+        "Martes": "Matemática",
+        "Miércoles": "Matemática",
+        "Jueves": "Literatura",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "09h50 - 10h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "10h20 - 11h00",
+        "Lunes": "-",
+        "Martes": "DP ECA",
+        "Miércoles": "-",
+        "Jueves": "Catequesis",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "ECA",
+        "Martes": "Ciencias Naturales",
+        "Miércoles": "ROBÓTICA",
+        "Jueves": "Matemática",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Ciencias Naturales",
+        "Martes": "-",
+        "Miércoles": "Religión",
+        "Jueves": "Inglés",
+        "Viernes": "Estudios Sociales"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Estudios Sociales",
+        "Martes": "STEAM",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "Inglés",
+        "Viernes": "Tutoría"
+      },
+      {
+        "hora": "13h00 - 13h20",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Octavo EGB": {
+    "curso": "Octavo EGB",
+    "tutor": "Ing. Verónica Valencia",
+    "grid": [
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Lengua y",
+        "Martes": "Matemática",
+        "Miércoles": "Religión",
+        "Jueves": "Ciencias Naturales",
+        "Viernes": "Estudios Sociales"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Literatura",
+        "Martes": "Ed. Física",
+        "Miércoles": "Ciencias Naturales",
+        "Jueves": "Ed. Física",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Catequesis",
+        "Martes": "MISA",
+        "Miércoles": "Ed. Física",
+        "Jueves": "Matemática",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "-",
+        "Martes": "DP Estudios",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "Inglés",
+        "Viernes": "Ciencias Naturales"
+      },
+      {
+        "hora": "09h50 - 10h30",
+        "Lunes": "Matemática",
+        "Martes": "Sociales",
+        "Miércoles": "Estudios Sociales",
+        "Jueves": "ECA",
+        "Viernes": "DP"
+      },
+      {
+        "hora": "10h30 - 11h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "-",
+        "Martes": "Lengua y",
+        "Miércoles": "OVP",
+        "Jueves": "Lengua y Literatura",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Inglés",
+        "Martes": "Literatura",
+        "Miércoles": "Matemática",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "ECA",
+        "Martes": "Ciencias",
+        "Miércoles": "-",
+        "Jueves": "Habilidades Computacionales",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "13h00 - 13h40",
+        "Lunes": "Estudios Sociales",
+        "Martes": "Naturales",
+        "Miércoles": "Inglés",
+        "Jueves": "Biblioteca",
+        "Viernes": "TUTORíA"
+      },
+      {
+        "hora": "13h40 - 14h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Noveno EGB": {
+    "curso": "Noveno EGB",
+    "tutor": "Lcdo. Diego Morán",
+    "grid": [
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Matemática",
+        "Martes": "Religión",
+        "Miércoles": "Estudios Sociales",
+        "Jueves": "Lengua y",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "-",
+        "Martes": "Estudios Sociales",
+        "Miércoles": "Biblioteca",
+        "Jueves": "Literatura",
+        "Viernes": "-"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Estudios Sociales",
+        "Martes": "MISA",
+        "Miércoles": "Matemática",
+        "Jueves": "Catequesis",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "-",
+        "Martes": "DP Ed. Física",
+        "Miércoles": "Ed. Física",
+        "Jueves": "Ed. Física",
+        "Viernes": "-"
+      },
+      {
+        "hora": "09h50 - 10h30",
+        "Lunes": "Inglés",
+        "Martes": "Matemática",
+        "Miércoles": "Inglés",
+        "Jueves": "Ciencias Naturales",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "10h30 - 11h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "Ciencias Naturales",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "-",
+        "Viernes": "ECA DP"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "ECA",
+        "Martes": "-",
+        "Miércoles": "OVP",
+        "Jueves": "Matemática",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Ciencias",
+        "Martes": "Inglés",
+        "Miércoles": "-",
+        "Jueves": "Estudios",
+        "Viernes": "Ciencias Naturales"
+      },
+      {
+        "hora": "13h00 - 13h40",
+        "Lunes": "Naturales",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "Habilidades Computacionales",
+        "Jueves": "Sociales",
+        "Viernes": "TUTORíA"
+      },
+      {
+        "hora": "13h40 - 14h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Décimo EGB": {
+    "curso": "Décimo EGB",
+    "tutor": "Lcda. Sonnia Muñoz",
+    "grid": [
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Estudios Sociales",
+        "Martes": "Ciencias Naturales",
+        "Miércoles": "Matemática",
+        "Jueves": "-",
+        "Viernes": "Religión"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "Matemática",
+        "Miércoles": "Ciencias Naturales",
+        "Jueves": "Habilidades Computacionales",
+        "Viernes": "ECA"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Matemática",
+        "Martes": "MISA",
+        "Miércoles": "Biblioteca",
+        "Jueves": "Inglés",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "-",
+        "Martes": "Estudios Sociales",
+        "Miércoles": "Lengua y",
+        "Jueves": "Estudios Sociales",
+        "Viernes": "Lengua y"
+      },
+      {
+        "hora": "09h50 - 10h30",
+        "Lunes": "Religión",
+        "Martes": "Ed. Física",
+        "Miércoles": "Literatura",
+        "Jueves": "Ed. Física",
+        "Viernes": "Literatura"
+      },
+      {
+        "hora": "10h30 - 11h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "DP",
+        "Martes": "Inglés",
+        "Miércoles": "Estudios",
+        "Jueves": "Lengua y Literatura",
+        "Viernes": "Ciencias Naturales"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "-",
+        "Martes": "ECA",
+        "Miércoles": "Sociales",
+        "Jueves": "-",
+        "Viernes": "DP Inglés"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Ciencias Naturales",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "OVP",
+        "Jueves": "Matemática",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "13h00 - 13h40",
+        "Lunes": "Inglés",
+        "Martes": "Catequesis",
+        "Miércoles": "Ed. Física",
+        "Jueves": "-",
+        "Viernes": "TUTORíA"
+      },
+      {
+        "hora": "13h40 - 14h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Primero BGU": {
+    "curso": "Primero BGU",
+    "tutor": "Tnlga. Deisy Mite",
+    "grid": [
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Matemática",
+        "Martes": "Historia",
+        "Miércoles": "Lengua y Literatura",
+        "Jueves": "Química",
+        "Viernes": "Filosofía"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Catequesis",
+        "Martes": "Anatomía",
+        "Miércoles": "Filosofía",
+        "Jueves": "-",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Biología",
+        "Martes": "MISA",
+        "Miércoles": "Emprendimiento y Gestión",
+        "Jueves": "Biblioteca",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Física",
+        "Martes": "Matemática",
+        "Miércoles": "Anatomía",
+        "Jueves": "DP",
+        "Viernes": "Educación para la Ciudadanía"
+      },
+      {
+        "hora": "09h50 - 10h30",
+        "Lunes": "Historia",
+        "Martes": "Inglés",
+        "Miércoles": "Religión",
+        "Jueves": "Religión",
+        "Viernes": "Física"
+      },
+      {
+        "hora": "10h30 - 11h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "-",
+        "Martes": "Ed. Física",
+        "Miércoles": "Inglés",
+        "Jueves": "Inglés",
+        "Viernes": "ECA"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "Química",
+        "Miércoles": "Inglés",
+        "Jueves": "Ed. Física",
+        "Viernes": "-"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Inglés",
+        "Martes": "-",
+        "Miércoles": "ECA Matemática",
+        "Jueves": "Física",
+        "Viernes": "Biología"
+      },
+      {
+        "hora": "13h00 - 13h40",
+        "Lunes": "Educación para la Ciudadanía",
+        "Martes": "Emprendimiento y Gestión",
+        "Miércoles": "-",
+        "Jueves": "Lengua y Literatura",
+        "Viernes": "TUTORíA"
+      },
+      {
+        "hora": "13h40 - 14h20",
+        "Lunes": "-",
+        "Martes": "P.P.E",
+        "Miércoles": "-",
+        "Jueves": "P.P.E",
+        "Viernes": "-"
+      },
+      {
+        "hora": "14h20 - 14h30",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Segundo BGU": {
+    "curso": "Segundo BGU",
+    "tutor": "Ab. Ángela Castillo",
+    "grid": [
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "Matemática",
+        "Miércoles": "Biología",
+        "Jueves": "Historia",
+        "Viernes": "ECA"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Inglés",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "ECA Inglés",
+        "Viernes": "Filosofía"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Historia",
+        "Martes": "MISA",
+        "Miércoles": "-",
+        "Jueves": "Lengua y Literatura",
+        "Viernes": "Catequesis"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Biología",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "Inglés",
+        "Jueves": "Física",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "09h50 - 10h30",
+        "Lunes": "Física",
+        "Martes": "Anatomía",
+        "Miércoles": "Química",
+        "Jueves": "Matemática",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "10h30 - 11h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "Educación para la Ciudadanía",
+        "Martes": "Emprendimiento y Gestión",
+        "Miércoles": "-",
+        "Jueves": "DP",
+        "Viernes": "Educación para la Ciudadanía"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Religión",
+        "Martes": "Ed. Física",
+        "Miércoles": "Emprendimiento y Gestión",
+        "Jueves": "Química",
+        "Viernes": "-"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "Filosofía",
+        "Martes": "Física",
+        "Miércoles": "Anatomía",
+        "Jueves": "Ed. Física",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "13h00 - 13h40",
+        "Lunes": "Matemática",
+        "Martes": "Biblioteca",
+        "Miércoles": "Religión",
+        "Jueves": "Biología",
+        "Viernes": "TUTORíA"
+      },
+      {
+        "hora": "13h40 - 14h20",
+        "Lunes": "-",
+        "Martes": "P.P.E",
+        "Miércoles": "-",
+        "Jueves": "P.P.E",
+        "Viernes": "-"
+      },
+      {
+        "hora": "14h20 - 14h30",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  },
+  "Tercero BGU": {
+    "curso": "Tercero BGU",
+    "tutor": "Blgo. Israel Del Valle",
+    "grid": [
+      {
+        "hora": "07h10 - 07h50",
+        "Lunes": "Biología",
+        "Martes": "Redacción Creativa",
+        "Miércoles": "Matemática",
+        "Jueves": "Números Complejos",
+        "Viernes": "Biología"
+      },
+      {
+        "hora": "07h50 - 08h30",
+        "Lunes": "Emprendimiento y Gestión",
+        "Martes": "Historia",
+        "Miércoles": "Inglés",
+        "Jueves": "Catequesis",
+        "Viernes": "Lengua y Literatura"
+      },
+      {
+        "hora": "08h30 - 09h10",
+        "Lunes": "Inglés",
+        "Martes": "MISA",
+        "Miércoles": "Anatomía",
+        "Jueves": "-",
+        "Viernes": "Números Complejos"
+      },
+      {
+        "hora": "09h10 - 09h50",
+        "Lunes": "Programación y Modelado 3D",
+        "Martes": "Biología",
+        "Miércoles": "Emprendimiento y Gestión",
+        "Jueves": "Química",
+        "Viernes": "Inglés"
+      },
+      {
+        "hora": "09h50 - 10h30",
+        "Lunes": "-",
+        "Martes": "Matemática",
+        "Miércoles": "Números Complejos",
+        "Jueves": "Historia",
+        "Viernes": "Química"
+      },
+      {
+        "hora": "10h30 - 11h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      },
+      {
+        "hora": "11h00 - 11h40",
+        "Lunes": "I.C.T.",
+        "Martes": "Lengua y Literatura",
+        "Miércoles": "Física",
+        "Jueves": "Ed. Física",
+        "Viernes": "Matemática"
+      },
+      {
+        "hora": "11h40 - 12h20",
+        "Lunes": "Física",
+        "Martes": "Religión",
+        "Miércoles": "Redacción Creativa",
+        "Jueves": "-",
+        "Viernes": "DP"
+      },
+      {
+        "hora": "12h20 - 13h00",
+        "Lunes": "-",
+        "Martes": "Ed. Física",
+        "Miércoles": "Religión",
+        "Jueves": "Redacción Creativa",
+        "Viernes": "Historia"
+      },
+      {
+        "hora": "13h00 - 13h40",
+        "Lunes": "Lengua y Literatura",
+        "Martes": "Anatomía",
+        "Miércoles": "Biblioteca",
+        "Jueves": "I.C T.",
+        "Viernes": "TUTORíA"
+      },
+      {
+        "hora": "13h40 - 14h00",
+        "Lunes": "-",
+        "Martes": "-",
+        "Miércoles": "-",
+        "Jueves": "-",
+        "Viernes": "-"
+      }
+    ]
+  }
+}

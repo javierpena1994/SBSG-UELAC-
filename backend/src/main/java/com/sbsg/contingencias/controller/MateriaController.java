@@ -42,6 +42,11 @@ public class MateriaController {
         return ResponseEntity.ok(materiaService.actualizar(id, materia));
     }
 
+    @PatchMapping("/{id}/toggle-examen")
+    public ResponseEntity<Materia> toggleAplicaExamen(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(materiaService.toggleAplicaExamen(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> eliminar(@PathVariable("id") Long id) {
         materiaService.eliminar(id);

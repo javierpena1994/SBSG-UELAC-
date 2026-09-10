@@ -10,8 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class MateriaService {
+
+    private static final Logger log = LoggerFactory.getLogger(MateriaService.class);
 
     private final MateriaRepository materiaRepository;
     private final HorarioClaseRepository horarioClaseRepository;
@@ -24,6 +30,34 @@ public class MateriaService {
         this.materiaRepository = materiaRepository;
         this.horarioClaseRepository = horarioClaseRepository;
         this.contingenciaRepository = contingenciaRepository;
+    }
+
+    @PostConstruct
+    @Transactional
+    public void inicializarAplicaExamenPorDefecto() {
+        try {
+            List<Materia> todas = materiaRepository.findAll();
+            for (Materia m : todas) {
+                if (m.getNombre() != null) {
+                    String n = m.getNombre().toUpperCase().trim();
+                    boolean esNoEvaluable = n.contains("BIBLIOTECA") ||
+                                           n.contains("TUTOR") ||
+                                           n.contains("ACOMPAÑAMIENTO") ||
+                                           n.contains("PPFF") ||
+                                           n.contains("PADRES") ||
+                                           n.contains("MISA") ||
+                                           n.contains("PASTORAL") ||
+                                           n.contains("OVP");
+                    if (esNoEvaluable && m.isAplicaExamen()) {
+                        m.setAplicaExamen(false);
+                        materiaRepository.save(m);
+                        log.info("Materia institucional '{}' configurada automáticamente como NO evaluable en examen.", m.getNombre());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo autoconfigurar materias no evaluables: {}", e.getMessage());
+        }
     }
 
     public List<Materia> obtenerTodas() {
@@ -64,7 +98,16 @@ public class MateriaService {
         }
 
         existente.setNombre(nuevoNombre);
+        existente.setAplicaExamen(materiaActualizada.isAplicaExamen());
         return materiaRepository.save(existente);
+    }
+
+    @Transactional
+    public Materia toggleAplicaExamen(Long id) {
+        Materia materia = materiaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + id));
+        materia.setAplicaExamen(!materia.isAplicaExamen());
+        return materiaRepository.save(materia);
     }
 
     @Transactional

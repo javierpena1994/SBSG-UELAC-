@@ -48,10 +48,23 @@ public class HorarioExamenDetalle {
     @Column(name = "docente_supervisor", length = 200)
     private String docenteSupervisor;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "curso_id", nullable = true)
+    private Curso curso;
+
+    @Column(name = "curso_nombre", length = 100)
+    private String cursoNombre;
+
     public HorarioExamenDetalle() {}
 
     public HorarioExamenDetalle(HorarioExamen horarioExamen, Integer diaNumero, LocalDate fecha, String diaSemana, Integer ordenDia, Materia materia, String materiaNombre, String tipoComplejidad, String horaInicio, String horaFin, String docenteSupervisor) {
+        this(horarioExamen, null, null, diaNumero, fecha, diaSemana, ordenDia, materia, materiaNombre, tipoComplejidad, horaInicio, horaFin, docenteSupervisor);
+    }
+
+    public HorarioExamenDetalle(HorarioExamen horarioExamen, Curso curso, String cursoNombre, Integer diaNumero, LocalDate fecha, String diaSemana, Integer ordenDia, Materia materia, String materiaNombre, String tipoComplejidad, String horaInicio, String horaFin, String docenteSupervisor) {
         this.horarioExamen = horarioExamen;
+        this.curso = curso;
+        this.cursoNombre = cursoNombre != null ? cursoNombre : (curso != null ? curso.getNombre() : null);
         this.diaNumero = diaNumero;
         this.fecha = fecha;
         this.diaSemana = diaSemana;
@@ -158,6 +171,22 @@ public class HorarioExamenDetalle {
 
     public void setDocenteSupervisor(String docenteSupervisor) {
         this.docenteSupervisor = docenteSupervisor;
+    }
+
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
+
+    public String getCursoNombre() {
+        return cursoNombre;
+    }
+
+    public void setCursoNombre(String cursoNombre) {
+        this.cursoNombre = cursoNombre;
     }
 }
 

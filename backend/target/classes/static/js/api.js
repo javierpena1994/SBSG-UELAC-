@@ -64,6 +64,7 @@ const API = (() => {
     getMateria: (id) => request(`/materias/${id}`),
     crearMateria: (data) => request('/materias', { method: 'POST', body: JSON.stringify(data) }),
     actualizarMateria: (id, data) => request(`/materias/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    toggleExamenMateria: (id) => request(`/materias/${id}/toggle-examen`, { method: 'PATCH' }),
     eliminarMateria: (id) => request(`/materias/${id}`, { method: 'DELETE' }),
 
     // Docentes
@@ -167,6 +168,9 @@ const API = (() => {
     // MÓDULO 2: HORARIOS DE EXÁMENES (SORTEO BALANCEADO)
     // ==========================================================
     getMateriasEvaluacionCurso: (cursoId) => request(`/examenes/materias-curso/${cursoId}`),
+    actualizarConfiguracionMateriaCurso: (cursoId, materiaId, data) => {
+      return request(`/examenes/curso/${cursoId}/materia/${materiaId}`, { method: 'PUT', body: JSON.stringify(data) });
+    },
     guardarMateriasCurso: (cursoId, materias) => request(`/examenes/curso-materias/${cursoId}/guardar`, { method: 'POST', body: JSON.stringify(materias) }),
     asignarMateriaCurso: (cursoId, materiaId, tipoComplejidad) => {
       const q = tipoComplejidad ? `&tipoComplejidad=${encodeURIComponent(tipoComplejidad)}` : '';
