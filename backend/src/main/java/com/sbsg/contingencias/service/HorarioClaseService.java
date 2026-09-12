@@ -60,6 +60,41 @@ public class HorarioClaseService {
                 .map(this::toDTO);
     }
 
+    public java.util.Map<String, Object> validarConflictoCurso(Long cursoId, String diaSemana, Long franjaHorariaId, Long docenteIdExcluir) {
+        java.util.Map<String, Object> resp = new java.util.HashMap<>();
+        if (cursoId == null || diaSemana == null || franjaHorariaId == null) {
+            resp.put("hayConflicto", false);
+            return resp;
+        }
+
+        List<HorarioClase> existentes = horarioClaseRepository.findByCursoIdAndDiaSemanaAndFranjaHorariaId(
+                cursoId, diaSemana.trim(), franjaHorariaId
+        );
+
+        for (HorarioClase hc : existentes) {
+            if (hc.isEsClase() && hc.getDocente() != null && (docenteIdExcluir == null || !hc.getDocente().getId().equals(docenteIdExcluir))) {
+                resp.put("hayConflicto", true);
+                resp.put("docenteId", hc.getDocente().getId());
+                resp.put("docenteNombre", hc.getDocente().getNombreCompleto());
+                resp.put("materiaId", hc.getMateria() != null ? hc.getMateria().getId() : null);
+                resp.put("materiaNombre", hc.getMateria() != null ? hc.getMateria().getNombre() : (hc.getActividad() != null ? hc.getActividad() : "Clase"));
+                resp.put("cursoId", hc.getCurso() != null ? hc.getCurso().getId() : cursoId);
+                resp.put("cursoNombre", hc.getCurso() != null ? hc.getCurso().getNombre() : "");
+                resp.put("diaSemana", hc.getDiaSemana());
+                resp.put("franjaHorariaId", hc.getFranjaHoraria() != null ? hc.getFranjaHoraria().getId() : franjaHorariaId);
+                resp.put("franjaHorariaEtiqueta", hc.getFranjaHoraria() != null ? hc.getFranjaHoraria().getEtiqueta() : "");
+                resp.put("mensaje", "Ya fue asignado el maestro " + hc.getDocente().getNombreCompleto()
+                        + ", con la materia " + (hc.getMateria() != null ? hc.getMateria().getNombre() : (hc.getActividad() != null ? hc.getActividad() : "Clase"))
+                        + " en el curso " + (hc.getCurso() != null ? hc.getCurso().getNombre() : "")
+                        + " y ese horario (" + hc.getDiaSemana() + " " + (hc.getFranjaHoraria() != null ? hc.getFranjaHoraria().getEtiqueta() : "") + ").");
+                return resp;
+            }
+        }
+
+        resp.put("hayConflicto", false);
+        return resp;
+    }
+
     @Transactional
     public List<HorarioClaseDTO> guardarHorarioDocente(GuardarHorarioClaseRequest req) {
         if (req.getDocenteId() == null) {
@@ -67,6 +102,30 @@ public class HorarioClaseService {
         }
         Docente docente = docenteRepository.findById(req.getDocenteId())
                 .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + req.getDocenteId()));
+
+        // 1. Validar que ningún slot colisione con otro docente ya asignado a ese curso y horario
+        if (req.getSlots() != null) {
+            for (GuardarHorarioClaseRequest.HorarioClaseItemRequest slot : req.getSlots()) {
+                if (slot.getFranjaHorariaId() == null || slot.getDiaSemana() == null) continue;
+                if (!slot.isEsClase() || slot.getCursoId() == null) continue;
+
+                List<HorarioClase> existentes = horarioClaseRepository.findByCursoIdAndDiaSemanaAndFranjaHorariaId(
+                        slot.getCursoId(), slot.getDiaSemana().trim(), slot.getFranjaHorariaId()
+                );
+                for (HorarioClase hc : existentes) {
+                    if (hc.isEsClase() && hc.getDocente() != null && !hc.getDocente().getId().equals(docente.getId())) {
+                        String docNom = hc.getDocente().getNombreCompleto();
+                        String matNom = hc.getMateria() != null ? hc.getMateria().getNombre() : (hc.getActividad() != null ? hc.getActividad() : "Clase");
+                        String curNom = hc.getCurso() != null ? hc.getCurso().getNombre() : "el curso";
+                        String franjaEti = hc.getFranjaHoraria() != null ? hc.getFranjaHoraria().getEtiqueta() : "";
+                        throw new IllegalStateException("Conflicto de horario: Ya fue asignado el maestro " + docNom
+                                + ", con la materia " + matNom
+                                + " en el curso " + curNom
+                                + " y ese horario (" + slot.getDiaSemana() + " " + franjaEti + ").");
+                    }
+                }
+            }
+        }
 
         horarioClaseRepository.deleteByDocenteId(docente.getId());
         horarioDisponibilidadRepository.deleteByDocenteId(docente.getId());

@@ -22,6 +22,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const modalCurso = document.getElementById('modal-curso');
   const modalActividad = document.getElementById('modal-actividad');
 
+  // Modal Conflicto Horario Curso
+  const modalConflicto = document.getElementById('modal-conflicto-horario');
+  const conflictoCursoNom = document.getElementById('conflicto-curso-nom');
+  const conflictoHorarioVal = document.getElementById('conflicto-horario-val');
+  const conflictoDocenteNom = document.getElementById('conflicto-docente-nom');
+  const conflictoMateriaNom = document.getElementById('conflicto-materia-nom');
+  const btnCerrarConflicto = document.getElementById('btn-cerrar-conflicto');
+  const btnCerrarConflictoX = document.getElementById('btn-cerrar-conflicto-x');
+
   const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
   let currentSeccion = 'ESCUELA'; // 'ESCUELA' | 'COLEGIO' | 'TODAS'
@@ -255,6 +264,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Funciones para el Modal Emergente de Conflicto de Horario
+  function showConflictModal(info) {
+    if (!modalConflicto) {
+      alert(info.mensaje || 'Choque de horario detectado con otro docente en este curso.');
+      return;
+    }
+    if (conflictoCursoNom) conflictoCursoNom.textContent = info.cursoNombre || 'Curso';
+    if (conflictoHorarioVal) conflictoHorarioVal.textContent = `${info.diaSemana || ''} (${info.franjaHorariaEtiqueta || ''})`;
+    if (conflictoDocenteNom) conflictoDocenteNom.textContent = info.docenteNombre || 'Otro Maestro';
+    if (conflictoMateriaNom) conflictoMateriaNom.textContent = info.materiaNombre || 'Materia';
+    modalConflicto.style.display = 'flex';
+  }
+
+  function hideConflictModal() {
+    if (modalConflicto) modalConflicto.style.display = 'none';
+  }
+
+  if (btnCerrarConflicto) btnCerrarConflicto.addEventListener('click', hideConflictModal);
+  if (btnCerrarConflictoX) btnCerrarConflictoX.addEventListener('click', hideConflictModal);
+
+  // Validación inmediata al seleccionar un curso en el modal
+  modalCurso.addEventListener('change', async () => {
+    const cursoId = modalCurso.value ? Number(modalCurso.value) : null;
+    if (!cursoId || !editingSlotKey) return;
+
+    const [dia, franjaIdStr] = editingSlotKey.split('_');
+    const franjaId = Number(franjaIdStr);
+    const tipo = document.querySelector('input[name="modal-tipo"]:checked')?.value || 'ocupado';
+    if (tipo !== 'ocupado') return;
+
+    try {
+      const resp = await API.validarConflictoCurso(cursoId, dia, franjaId, currentDocenteId);
+      if (resp && resp.hayConflicto) {
+        modalCurso.value = ''; // Deseleccionar inmediatamente
+        showConflictModal(resp);
+      }
+    } catch (err) {
+      console.warn('Error al verificar conflicto de curso:', err);
+    }
+  });
+
   function closeModal() {
     modal.style.display = 'none';
     editingSlotKey = null;
@@ -263,7 +313,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnCloseModal.addEventListener('click', closeModal);
   btnCancelModal.addEventListener('click', closeModal);
 
-  // Apply changes from modal & Auto-Save
+  // Apply changes from modal & Auto-Save con Validación Antichoques
   btnApplyModal.addEventListener('click', async () => {
     if (!editingSlotKey) return;
 
@@ -272,10 +322,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tipo = document.querySelector('input[name="modal-tipo"]:checked')?.value || 'ocupado';
     const esClase = tipo === 'ocupado';
 
+    const cursoId = modalCurso.value ? Number(modalCurso.value) : null;
+
+    // Validación estricta antes de aplicar cambios
+    if (esClase && cursoId) {
+      btnApplyModal.disabled = true;
+      btnApplyModal.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando disponibilidad...';
+      try {
+        const resp = await API.validarConflictoCurso(cursoId, dia, franjaId, currentDocenteId);
+        if (resp && resp.hayConflicto) {
+          modalCurso.value = '';
+          showConflictModal(resp);
+          btnApplyModal.disabled = false;
+          btnApplyModal.innerHTML = '<i class="fa-solid fa-check"></i> Aplicar al Horario';
+          return;
+        }
+      } catch (err) {
+        console.warn('Error al validar conflicto:', err);
+      } finally {
+        btnApplyModal.disabled = false;
+        btnApplyModal.innerHTML = '<i class="fa-solid fa-check"></i> Aplicar al Horario';
+      }
+    }
+
     const materiaId = modalMateria.value ? Number(modalMateria.value) : null;
     const materiaObj = catalogos.materias.find(m => m.id === materiaId);
-
-    const cursoId = modalCurso.value ? Number(modalCurso.value) : null;
     const cursoObj = catalogos.cursos.find(c => c.id === cursoId);
 
     let actividad = modalActividad.value.trim();

@@ -319,30 +319,128 @@ public class HorarioExamenService {
         horarioDTO.setMateriasPorDia(materiasPorDia);
 
         boolean isCol = esColegio(cursoSel);
+        int totalMaterias = seleccionadas.size();
+        int minDiasReq = !isCol ? (int) Math.ceil((double) totalMaterias / 2.0) : (int) Math.ceil((double) totalMaterias / 3.0);
+        if (numDias < minDiasReq) {
+            numDias = minDiasReq;
+            fechas.clear();
+            LocalDate cur = req.getFechaInicio();
+            while (fechas.size() < numDias) {
+                if (req.isSaltarFinesDeSemana()) {
+                    if (cur.getDayOfWeek() != DayOfWeek.SATURDAY && cur.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                        fechas.add(cur);
+                    }
+                } else {
+                    fechas.add(cur);
+                }
+                cur = cur.plusDays(1);
+            }
+            fechaFin = fechas.isEmpty() ? req.getFechaInicio() : fechas.get(fechas.size() - 1);
+            horarioDTO.setNumDias(numDias);
+            horarioDTO.setFechaFin(fechaFin);
+        }
+
         String hora1Ini = req.getHoraInicio1() != null ? req.getHoraInicio1() : "07h30";
         String hora1Fin = req.getHoraFin1() != null ? req.getHoraFin1() : "08h30";
         String hora2Ini = req.getHoraInicio2() != null ? req.getHoraInicio2() : (isCol ? "09h30" : "08h30");
         String hora2Fin = req.getHoraFin2() != null ? req.getHoraFin2() : (isCol ? "10h30" : "09h30");
 
+        // Distribuir slots por día para cubrir exactamente el 100% de materias
+        int[] spd = new int[numDias];
+        Arrays.fill(spd, 2);
+        if (totalMaterias > 2 * numDias) {
+            int extra = totalMaterias - 2 * numDias;
+            for (int i = 0; i < extra && i < numDias; i++) {
+                spd[i]++;
+            }
+        } else if (totalMaterias < 2 * numDias) {
+            int rem = 2 * numDias - totalMaterias;
+            for (int i = 0; i < rem && i < numDias; i++) {
+                spd[numDias - 1 - i]--;
+            }
+        }
+
+        Deque<MateriaEvaluacionDTO> qDifs = new ArrayDeque<>(complejas);
+        Deque<MateriaEvaluacionDTO> qFacs = new ArrayDeque<>(noComplejas);
+
+        List<List<MateriaEvaluacionDTO>> bundles = new ArrayList<>();
+        for (int s : spd) {
+            List<MateriaEvaluacionDTO> b = new ArrayList<>();
+            if (s == 2) {
+                if (!qDifs.isEmpty() && !qFacs.isEmpty()) {
+                    b.add(qDifs.pollFirst()); // Bloque 1: Difícil
+                    b.add(qFacs.pollFirst()); // Bloque 2: Fácil
+                } else if (qDifs.size() >= 2) {
+                    b.add(qDifs.pollFirst()); // Bloque 1: Difícil
+                    b.add(qDifs.pollFirst()); // Bloque 2: Difícil (Día de 2 difíciles)
+                } else if (qFacs.size() >= 2) {
+                    b.add(qFacs.pollFirst()); // Bloque 1: Fácil
+                    b.add(qFacs.pollFirst()); // Bloque 2: Fácil (Día de 2 fáciles)
+                } else {
+                    if (!qDifs.isEmpty()) b.add(qDifs.pollFirst());
+                    if (!qFacs.isEmpty()) b.add(qFacs.pollFirst());
+                }
+            } else if (s == 1) {
+                if (!qDifs.isEmpty()) b.add(qDifs.pollFirst());
+                else if (!qFacs.isEmpty()) b.add(qFacs.pollFirst());
+            } else if (s == 3) {
+                if (!qDifs.isEmpty() && !qFacs.isEmpty()) {
+                    b.add(qDifs.pollFirst());
+                    b.add(qFacs.pollFirst());
+                } else if (qDifs.size() >= 2) {
+                    b.add(qDifs.pollFirst());
+                    b.add(qDifs.pollFirst());
+                } else {
+                    if (!qDifs.isEmpty()) b.add(qDifs.pollFirst());
+                    if (!qFacs.isEmpty()) b.add(qFacs.pollFirst());
+                }
+                if (!qFacs.isEmpty()) b.add(qFacs.pollFirst());
+                else if (!qDifs.isEmpty()) b.add(qDifs.pollFirst());
+            }
+            bundles.add(b);
+        }
+
+        int count2Single = 0;
+        for (List<MateriaEvaluacionDTO> b : bundles) {
+            if (b.size() == 2) count2Single++;
+        }
+        List<int[]> patterns2Single = new ArrayList<>();
+        for (int p = 0; p < count2Single; p++) {
+            if (p % 2 == 0) {
+                patterns2Single.add(new int[]{1, 2}); // Consecutivo (07h30 y 08h30)
+            } else {
+                patterns2Single.add(new int[]{1, 3}); // Con espacio (07h30 y 09h30)
+            }
+        }
+        Collections.shuffle(patterns2Single, random);
+        int patIdxSingle = 0;
+
         List<HorarioExamenDetalleDTO> detalles = new ArrayList<>();
-
-        int idxCompleja = 0;
-        int idxNoCompleja = 0;
-
         for (int d = 0; d < numDias; d++) {
             int diaNumero = d + 1;
-            LocalDate fechaDia = fechas.get(d);
+            LocalDate fechaDia = (d < fechas.size()) ? fechas.get(d) : fechaFin;
             String diaSemana = DisponibilidadService.obtenerDiaSemanaEnEspanol(fechaDia);
+            List<MateriaEvaluacionDTO> b = bundles.get(d);
 
-            // Slot 1: Intentar asignar Materia Compleja
-            MateriaEvaluacionDTO mSlot1 = null;
-            if (idxCompleja < complejas.size()) {
-                mSlot1 = complejas.get(idxCompleja++);
-            } else if (idxNoCompleja < noComplejas.size()) {
-                mSlot1 = noComplejas.get(idxNoCompleja++);
+            int[] pat;
+            if (!isCol) {
+                pat = (b.size() == 2) ? new int[]{1, 2} : new int[]{1};
+            } else {
+                if (b.size() == 3) {
+                    pat = new int[]{1, 2, 3};
+                } else if (b.size() == 1) {
+                    pat = new int[]{1};
+                } else {
+                    pat = patterns2Single.get(patIdxSingle++);
+                }
             }
 
-            if (mSlot1 != null) {
+            for (int bIdx = 0; bIdx < b.size(); bIdx++) {
+                int orden = pat[bIdx];
+                MateriaEvaluacionDTO m = b.get(bIdx);
+                String hIni = getHoraInicioPorOrden(orden);
+                String hFin = getHoraFinPorOrden(orden);
+
                 detalles.add(new HorarioExamenDetalleDTO(
                         null,
                         req.getCursoId(),
@@ -350,67 +448,15 @@ public class HorarioExamenService {
                         diaNumero,
                         fechaDia,
                         diaSemana,
-                        1,
-                        mSlot1.getMateriaId(),
-                        mSlot1.getMateriaNombre(),
-                        mSlot1.getTipoComplejidad(),
-                        hora1Ini,
-                        hora1Fin,
-                        mSlot1.getDocenteNombre()
+                        orden,
+                        m.getMateriaId(),
+                        m.getMateriaNombre(),
+                        m.getTipoComplejidad(),
+                        hIni,
+                        hFin,
+                        m.getDocenteNombre()
                 ));
             }
-
-            // Slot 2: Intentar asignar Materia Menos Compleja
-            if (materiasPorDia >= 2) {
-                MateriaEvaluacionDTO mSlot2 = null;
-                if (idxNoCompleja < noComplejas.size()) {
-                    mSlot2 = noComplejas.get(idxNoCompleja++);
-                } else if (idxCompleja < complejas.size()) {
-                    mSlot2 = complejas.get(idxCompleja++);
-                }
-
-                if (mSlot2 != null) {
-                    detalles.add(new HorarioExamenDetalleDTO(
-                            null,
-                            req.getCursoId(),
-                            nombreCurso,
-                            diaNumero,
-                            fechaDia,
-                            diaSemana,
-                            2,
-                            mSlot2.getMateriaId(),
-                            mSlot2.getMateriaNombre(),
-                            mSlot2.getTipoComplejidad(),
-                            hora2Ini,
-                            hora2Fin,
-                            mSlot2.getDocenteNombre()
-                    ));
-                }
-            }
-        }
-
-        // Si aún sobran materias no ubicadas, agregarlas equitativamente
-        int extraDia = 1;
-        while (idxCompleja < complejas.size() || idxNoCompleja < noComplejas.size()) {
-            MateriaEvaluacionDTO extraM = idxCompleja < complejas.size() ? complejas.get(idxCompleja++) : noComplejas.get(idxNoCompleja++);
-            LocalDate f = extraDia <= fechas.size() ? fechas.get(extraDia - 1) : fechaFin;
-            String diaSem = DisponibilidadService.obtenerDiaSemanaEnEspanol(f);
-            detalles.add(new HorarioExamenDetalleDTO(
-                    null,
-                    req.getCursoId(),
-                    nombreCurso,
-                    extraDia,
-                    f,
-                    diaSem,
-                    3,
-                    extraM.getMateriaId(),
-                    extraM.getMateriaNombre(),
-                    extraM.getTipoComplejidad(),
-                    "10h50",
-                    "12h10",
-                    extraM.getDocenteNombre()
-            ));
-            extraDia = (extraDia % numDias) + 1;
         }
 
         horarioDTO.setDetalles(detalles);
@@ -429,7 +475,7 @@ public class HorarioExamenService {
         String hora2Ini = req.getHoraInicio2() != null ? req.getHoraInicio2() : "09h30";
         String hora2Fin = req.getHoraFin2() != null ? req.getHoraFin2() : "10h30";
 
-        // Generar lista de 7 fechas hábiles (saltando sábados y domingos si corresponde)
+        // Generar lista de 7 fechas hábiles (saltando fines de semana si corresponde)
         List<LocalDate> fechas = new ArrayList<>();
         LocalDate curDate = req.getFechaInicio();
         while (fechas.size() < numDias) {
@@ -451,39 +497,71 @@ public class HorarioExamenService {
         List<HorarioExamenDetalleDTO> todosDetalles = new ArrayList<>();
         SecureRandom random = new SecureRandom();
 
-        // Control de asignaciones de profesores por slot horario: Clave = "diaNumero_ordenDia"
-        Map<String, Set<String>> ocupacionDocentes = new HashMap<>();
-        for (int d = 1; d <= numDias; d++) {
-            for (int b = 1; b <= 3; b++) {
-                ocupacionDocentes.put(d + "_" + b, new HashSet<>());
-            }
-        }
-
-        // Primero procesar Bachillerato (requiere los 7 días), luego Básica (días 3 al 7)
+        // Orden de procesamiento pedagógico: Bachillerato primero (7 días), luego Básica Superior (Colegio), luego Escuela
         List<Curso> bachillerato = todosCursos.stream().filter(this::esBachillerato).collect(Collectors.toList());
-        List<Curso> basica = todosCursos.stream().filter(c -> !esBachillerato(c)).collect(Collectors.toList());
+        List<Curso> superior = todosCursos.stream().filter(c -> !esBachillerato(c) && esColegio(c)).collect(Collectors.toList());
+        List<Curso> escuela = todosCursos.stream().filter(c -> !esColegio(c)).collect(Collectors.toList());
 
-        List<Curso> ordenProcesamiento = new ArrayList<>();
-        ordenProcesamiento.addAll(bachillerato);
-        ordenProcesamiento.addAll(basica);
+        List<Curso> ordenProcesamientoBase = new ArrayList<>();
+        ordenProcesamientoBase.addAll(bachillerato);
+        ordenProcesamientoBase.addAll(superior);
+        ordenProcesamientoBase.addAll(escuela);
 
-        for (Curso curso : ordenProcesamiento) {
-            boolean isBgu = esBachillerato(curso);
-            List<Integer> diasDisponibles = new ArrayList<>();
-            if (isBgu) {
-                // Bachillerato rinde los 7 días
-                for (int d = 1; d <= 7; d++) diasDisponibles.add(d);
-            } else {
-                // Inicial y Básica rinden los 5 días centrales (días 3 al 7)
-                for (int d = 3; d <= 7; d++) diasDisponibles.add(d);
+        List<HorarioExamenDetalleDTO> bestGlobalDetalles = new ArrayList<>();
+        int bestGlobalConflicts = Integer.MAX_VALUE;
+
+        // Bucle de optimización global para garantizar 0 colisiones docentes entre todos los cursos
+        for (int globalAttempt = 0; globalAttempt < 60; globalAttempt++) {
+            List<HorarioExamenDetalleDTO> currentAttemptDetalles = new ArrayList<>();
+
+            // Control de asignaciones de profesores por slot horario: Clave = "diaNumero_ordenDia" y "diaNumero_hIni"
+            Map<String, Set<String>> ocupacionDocentes = new HashMap<>();
+            for (int d = 1; d <= numDias; d++) {
+                for (int b = 1; b <= 3; b++) {
+                    ocupacionDocentes.put(d + "_" + b, new HashSet<>());
+                }
             }
 
-            // Obtener materias evaluables para este curso (excluye tomaExamen = false)
+            List<Curso> ordenProcesamiento = new ArrayList<>(ordenProcesamientoBase);
+            if (globalAttempt > 0) {
+                Collections.shuffle(ordenProcesamiento, random);
+            }
+
+            for (Curso curso : ordenProcesamiento) {
+                boolean isCol = esColegio(curso);
+
+            // Obtener materias evaluables para este curso (tomaExamen = true)
             List<MateriaEvaluacionDTO> materiasCurso = obtenerMateriasPorCurso(curso.getId()).stream()
                     .filter(MateriaEvaluacionDTO::isTomaExamen)
                     .collect(Collectors.toList());
             if (materiasCurso.isEmpty()) {
                 continue;
+            }
+
+            int n = materiasCurso.size();
+
+            // Determinar días disponibles según nivel y cantidad de materias
+            List<Integer> diasDisponibles = new ArrayList<>();
+            if (isCol) {
+                if (n > 14) {
+                    for (int d = 1; d <= 7; d++) diasDisponibles.add(d);
+                } else if (n > 10) {
+                    for (int d = 2; d <= 7; d++) diasDisponibles.add(d);
+                } else {
+                    for (int d = 3; d <= 7; d++) diasDisponibles.add(d);
+                }
+            } else {
+                // Escuela: NUNCA bloque 3.
+                // Si n <= 10 -> 5 días (3 al 7).
+                // Si n in [11, 12] -> 6 días (2 al 7).
+                // Si n > 12 -> 7 días (1 al 7).
+                if (n > 12) {
+                    for (int d = 1; d <= 7; d++) diasDisponibles.add(d);
+                } else if (n > 10) {
+                    for (int d = 2; d <= 7; d++) diasDisponibles.add(d);
+                } else {
+                    for (int d = 3; d <= 7; d++) diasDisponibles.add(d);
+                }
             }
 
             // Separar difíciles (complejas) y fáciles (no complejas)
@@ -500,28 +578,215 @@ public class HorarioExamenService {
             Collections.shuffle(complejas, random);
             Collections.shuffle(noComplejas, random);
 
-            // Matriz local para este curso: (dia_ordenDia) -> detalle
+            // Determinar slots por día para cubrir exactamente las n materias
+            int numDays = diasDisponibles.size();
+            int[] spdCurso = new int[numDays];
+            Arrays.fill(spdCurso, 2);
+
+            if (n > 2 * numDays) {
+                int extra = n - 2 * numDays;
+                for (int i = 0; i < extra && i < numDays; i++) {
+                    spdCurso[i]++;
+                }
+            } else if (n < 2 * numDays) {
+                int rem = 2 * numDays - n;
+                for (int i = 0; i < rem && i < numDays; i++) {
+                    spdCurso[numDays - 1 - i]--;
+                }
+            }
+
+            // Construir paquetes diarios (bundles) aplicando el balance pedagógico solicitado:
+            // 1. Primer criterio: Mezclar 1 fácil + 1 difícil por día.
+            // 2. Si sobran difíciles: días con 2 difíciles (ej. 6 difíciles y 4 fáciles -> 4 días 1D+1F y 1 día 2D).
+            // 3. Si sobran fáciles: días con 2 fáciles.
+            // 4. Si el total es impar: el día con 1 solo examen lleva la materia restante en Bloque 1.
+            Deque<MateriaEvaluacionDTO> qDifsCurso = new ArrayDeque<>(complejas);
+            Deque<MateriaEvaluacionDTO> qFacsCurso = new ArrayDeque<>(noComplejas);
+
+            List<List<MateriaEvaluacionDTO>> bundles = new ArrayList<>();
+            for (int s : spdCurso) {
+                List<MateriaEvaluacionDTO> b = new ArrayList<>();
+                if (s == 2) {
+                    if (!qDifsCurso.isEmpty() && !qFacsCurso.isEmpty()) {
+                        b.add(qDifsCurso.pollFirst()); // Slot 1: Difícil
+                        b.add(qFacsCurso.pollFirst()); // Slot 2: Fácil
+                    } else if (qDifsCurso.size() >= 2) {
+                        b.add(qDifsCurso.pollFirst()); // Slot 1: Difícil
+                        b.add(qDifsCurso.pollFirst()); // Slot 2: Difícil (Día con 2 difíciles)
+                    } else if (qFacsCurso.size() >= 2) {
+                        b.add(qFacsCurso.pollFirst()); // Slot 1: Fácil
+                        b.add(qFacsCurso.pollFirst()); // Slot 2: Fácil (Día con 2 fáciles)
+                    } else {
+                        if (!qDifsCurso.isEmpty()) b.add(qDifsCurso.pollFirst());
+                        if (!qFacsCurso.isEmpty()) b.add(qFacsCurso.pollFirst());
+                    }
+                } else if (s == 1) {
+                    if (!qDifsCurso.isEmpty()) b.add(qDifsCurso.pollFirst());
+                    else if (!qFacsCurso.isEmpty()) b.add(qFacsCurso.pollFirst());
+                } else if (s == 3) {
+                    if (!qDifsCurso.isEmpty() && !qFacsCurso.isEmpty()) {
+                        b.add(qDifsCurso.pollFirst());
+                        b.add(qFacsCurso.pollFirst());
+                    } else if (qDifsCurso.size() >= 2) {
+                        b.add(qDifsCurso.pollFirst());
+                        b.add(qDifsCurso.pollFirst());
+                    } else {
+                        if (!qDifsCurso.isEmpty()) b.add(qDifsCurso.pollFirst());
+                        if (!qFacsCurso.isEmpty()) b.add(qFacsCurso.pollFirst());
+                    }
+                    if (!qFacsCurso.isEmpty()) b.add(qFacsCurso.pollFirst());
+                    else if (!qDifsCurso.isEmpty()) b.add(qDifsCurso.pollFirst());
+                }
+                bundles.add(b);
+            }
+
+            // Preparar patrones para días con 2 exámenes en Colegio
+            int count2 = 0;
+            for (List<MateriaEvaluacionDTO> b : bundles) {
+                if (b.size() == 2) count2++;
+            }
+
+            List<int[]> patterns2 = new ArrayList<>();
+            for (int p = 0; p < count2; p++) {
+                if ((p + (curso.getId() != null ? curso.getId().intValue() : 0)) % 2 == 0) {
+                    patterns2.add(new int[]{1, 2}); // Consecutivo (07h30 y 08h30)
+                } else {
+                    patterns2.add(new int[]{1, 3}); // Con espacio (07h30 y 09h30)
+                }
+            }
+
+            // Optimización de asignación a días y orientación para prevenir choques docentes
+            List<Integer> bestPermDias = null;
+            List<List<MateriaEvaluacionDTO>> bestOrientations = null;
+            List<int[]> bestPatterns = null;
+            int bestConf = Integer.MAX_VALUE;
+
+            for (int attempt = 0; attempt < 250; attempt++) {
+                List<Integer> permDias = new ArrayList<>(diasDisponibles);
+                Collections.shuffle(permDias, random);
+
+                List<int[]> curPatterns2 = new ArrayList<>(patterns2);
+                Collections.shuffle(curPatterns2, random);
+                int patIdx = 0;
+
+                int curConf = 0;
+                List<List<MateriaEvaluacionDTO>> orientations = new ArrayList<>();
+                List<int[]> dayPatternsUsed = new ArrayList<>();
+
+                for (int i = 0; i < permDias.size(); i++) {
+                    int d = permDias.get(i);
+                    List<MateriaEvaluacionDTO> b = bundles.get(i);
+
+                    int[] pat;
+                    if (!isCol) {
+                        pat = (b.size() == 2) ? new int[]{1, 2} : new int[]{1};
+                    } else {
+                        if (b.size() == 3) {
+                            pat = new int[]{1, 2, 3};
+                        } else if (b.size() == 1) {
+                            pat = new int[]{1};
+                        } else {
+                            pat = curPatterns2.get(patIdx++);
+                        }
+                    }
+                    dayPatternsUsed.add(pat);
+
+                    if (b.size() == 2) {
+                        MateriaEvaluacionDTO m0 = b.get(0);
+                        MateriaEvaluacionDTO m1 = b.get(1);
+                        String doc0 = m0.getDocenteNombre() != null ? m0.getDocenteNombre().trim() : "";
+                        String doc1 = m1.getDocenteNombre() != null ? m1.getDocenteNombre().trim() : "";
+
+                        String hA = getHoraInicioPorOrden(pat[0]);
+                        String hB = getHoraInicioPorOrden(pat[1]);
+
+                        int cNorm = (!doc0.isEmpty() && ocupacionDocentes.getOrDefault(d + "_" + hA, Collections.emptySet()).contains(doc0) ? 1 : 0)
+                                  + (!doc1.isEmpty() && ocupacionDocentes.getOrDefault(d + "_" + hB, Collections.emptySet()).contains(doc1) ? 1 : 0);
+
+                        int cSwap = (!doc1.isEmpty() && ocupacionDocentes.getOrDefault(d + "_" + hA, Collections.emptySet()).contains(doc1) ? 1 : 0)
+                                  + (!doc0.isEmpty() && ocupacionDocentes.getOrDefault(d + "_" + hB, Collections.emptySet()).contains(doc0) ? 1 : 0);
+
+                        if (cNorm <= cSwap) {
+                            curConf += cNorm;
+                            orientations.add(List.of(m0, m1));
+                        } else {
+                            curConf += cSwap;
+                            orientations.add(List.of(m1, m0));
+                        }
+                    } else {
+                        for (int bIdx = 0; bIdx < b.size(); bIdx++) {
+                            MateriaEvaluacionDTO m = b.get(bIdx);
+                            String doc = m.getDocenteNombre() != null ? m.getDocenteNombre().trim() : "";
+                            String h = getHoraInicioPorOrden(pat[bIdx]);
+                            if (!doc.isEmpty() && ocupacionDocentes.getOrDefault(d + "_" + h, Collections.emptySet()).contains(doc)) {
+                                curConf++;
+                            }
+                        }
+                        orientations.add(b);
+                    }
+                }
+
+                if (curConf < bestConf) {
+                    bestConf = curConf;
+                    bestPermDias = permDias;
+                    bestOrientations = orientations;
+                    bestPatterns = dayPatternsUsed;
+                    if (bestConf == 0) break;
+                }
+            }
+
+            // Registrar asignación definitiva de todas las materias del curso
             Map<String, HorarioExamenDetalleDTO> asignacionCurso = new HashMap<>();
+            for (int i = 0; i < bestPermDias.size(); i++) {
+                int d = bestPermDias.get(i);
+                List<MateriaEvaluacionDTO> b = bestOrientations.get(i);
+                int[] pat = bestPatterns.get(i);
 
-            // Asignar materias complejas principalmente en Bloque 1
-            for (MateriaEvaluacionDTO m : complejas) {
-                String docNom = m.getDocenteNombre() != null ? m.getDocenteNombre().trim() : "";
-                asignarMateriaASlot(m, docNom, curso, diasDisponibles, 1, 2, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin, random);
+                for (int bIdx = 0; bIdx < b.size(); bIdx++) {
+                    int orden = pat[bIdx];
+                    String hIni = getHoraInicioPorOrden(orden);
+                    String hFin = getHoraFinPorOrden(orden);
+                    MateriaEvaluacionDTO m = b.get(bIdx);
+                    String docNom = m.getDocenteNombre() != null ? m.getDocenteNombre().trim() : "";
+
+                    crearYRegistrarDetalle(
+                            m, docNom, curso, d, orden, hIni, hFin,
+                            asignacionCurso, ocupacionDocentes, fechas
+                    );
+                }
             }
 
-            // Asignar materias no complejas principalmente en Bloque 2
-            for (MateriaEvaluacionDTO m : noComplejas) {
-                String docNom = m.getDocenteNombre() != null ? m.getDocenteNombre().trim() : "";
-                asignarMateriaASlot(m, docNom, curso, diasDisponibles, 2, 1, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin, random);
-            }
-
-            todosDetalles.addAll(asignacionCurso.values());
+            currentAttemptDetalles.addAll(asignacionCurso.values());
         }
 
-        // Ordenar todos los detalles por cursoId, diaNumero, ordenDia
-        todosDetalles.sort(Comparator.comparing((HorarioExamenDetalleDTO d) -> d.getCursoId() != null ? d.getCursoId() : 0L)
-                .thenComparing(HorarioExamenDetalleDTO::getDiaNumero)
-                .thenComparing(HorarioExamenDetalleDTO::getOrdenDia));
+        // Calcular colisiones reales exactas en este intento global
+        Set<String> seenDocSlots = new HashSet<>();
+        int actualCollisions = 0;
+        for (HorarioExamenDetalleDTO det : currentAttemptDetalles) {
+            String doc = det.getDocenteNombre() != null ? det.getDocenteNombre().trim() : "";
+            if (!doc.isEmpty()) {
+                String key = doc + "_" + det.getDiaNumero() + "_" + det.getHoraInicio();
+                if (!seenDocSlots.add(key)) {
+                    actualCollisions++;
+                }
+            }
+        }
+
+        if (actualCollisions < bestGlobalConflicts) {
+            bestGlobalConflicts = actualCollisions;
+            bestGlobalDetalles = currentAttemptDetalles;
+            if (bestGlobalConflicts == 0) {
+                break;
+            }
+        }
+    }
+
+    todosDetalles = bestGlobalDetalles;
+
+    // Ordenar todos los detalles por cursoId, diaNumero, ordenDia
+    todosDetalles.sort(Comparator.comparing((HorarioExamenDetalleDTO d) -> d.getCursoId() != null ? d.getCursoId() : 0L)
+            .thenComparing(HorarioExamenDetalleDTO::getDiaNumero)
+            .thenComparing(HorarioExamenDetalleDTO::getOrdenDia));
 
         HorarioExamenDTO horarioDTO = new HorarioExamenDTO();
         horarioDTO.setTitulo(req.getTitulo() != null && !req.getTitulo().trim().isEmpty()
@@ -533,113 +798,10 @@ public class HorarioExamenService {
         horarioDTO.setFechaFin(fechaFin);
         horarioDTO.setNumDias(numDias);
         horarioDTO.setMateriasPorDia(materiasPorDia);
-        horarioDTO.setObservaciones("Sorteo general institucional balanceado: Bachillerato rinde 7 días (empieza días 1 y 2); Inicial y Básica rinden 5 días (días 3 al 7). Sin choques docentes.");
+        horarioDTO.setObservaciones("Sorteo general institucional balanceado: Cobertura 100% de materias activas con balance 1 Difícil + 1 Fácil (y días de 2 difíciles según excedente). Sin desbordes a bloques inexistentes.");
         horarioDTO.setDetalles(todosDetalles);
 
         return horarioDTO;
-    }
-
-    private void asignarMateriaASlot(
-            MateriaEvaluacionDTO m,
-            String docNom,
-            Curso curso,
-            List<Integer> diasDisponibles,
-            int bloquePreferido,
-            int bloqueSecundario,
-            Map<String, HorarioExamenDetalleDTO> asignacionCurso,
-            Map<String, Set<String>> ocupacionDocentes,
-            List<LocalDate> fechas,
-            String hora1Ini, String hora1Fin,
-            String hora2Ini, String hora2Fin,
-            SecureRandom random) {
-
-        List<Integer> diasShuffled = new ArrayList<>(diasDisponibles);
-        Collections.shuffle(diasShuffled, random);
-
-        // 1. Intentar en bloque preferido en los días disponibles sin choque docente
-        for (int d : diasShuffled) {
-            String slotKey = d + "_" + bloquePreferido;
-            if (!asignacionCurso.containsKey(slotKey)) {
-                Set<String> ocupados = ocupacionDocentes.getOrDefault(slotKey, Collections.emptySet());
-                if (docNom.isEmpty() || !ocupados.contains(docNom)) {
-                    crearYRegistrarDetalle(m, docNom, curso, d, bloquePreferido, slotKey, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin);
-                    return;
-                }
-            }
-        }
-
-        // 2. Intentar en bloque secundario sin choque docente
-        for (int d : diasShuffled) {
-            String slotKey = d + "_" + bloqueSecundario;
-            if (!asignacionCurso.containsKey(slotKey)) {
-                Set<String> ocupados = ocupacionDocentes.getOrDefault(slotKey, Collections.emptySet());
-                if (docNom.isEmpty() || !ocupados.contains(docNom)) {
-                    crearYRegistrarDetalle(m, docNom, curso, d, bloqueSecundario, slotKey, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin);
-                    return;
-                }
-            }
-        }
-
-        // 3. Buscar en cualquier bloque (1, 2 o 3) en cualquier día disponible sin choque docente
-        for (int b : List.of(bloquePreferido, bloqueSecundario, 3)) {
-            for (int d : diasShuffled) {
-                String slotKey = d + "_" + b;
-                if (!asignacionCurso.containsKey(slotKey)) {
-                    Set<String> ocupados = ocupacionDocentes.getOrDefault(slotKey, Collections.emptySet());
-                    if (docNom.isEmpty() || !ocupados.contains(docNom)) {
-                        crearYRegistrarDetalle(m, docNom, curso, d, b, slotKey, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin);
-                        return;
-                    }
-                }
-            }
-        }
-
-        // 4. Intentar reubicar / swap con una materia ya asignada en este curso para liberar un slot sin conflicto docente
-        if (!docNom.isEmpty()) {
-            for (Map.Entry<String, HorarioExamenDetalleDTO> entry : new ArrayList<>(asignacionCurso.entrySet())) {
-                String existingSlotKey = entry.getKey();
-                HorarioExamenDetalleDTO existingDetalle = entry.getValue();
-                String existingDoc = existingDetalle.getDocenteSupervisor() != null ? existingDetalle.getDocenteSupervisor().trim() : "";
-
-                Set<String> ocupadosExistingSlot = ocupacionDocentes.getOrDefault(existingSlotKey, Collections.emptySet());
-                if (!ocupadosExistingSlot.contains(docNom)) {
-                    for (int bCandidate : List.of(1, 2, 3)) {
-                        for (int dCandidate : diasShuffled) {
-                            String newSlotKey = dCandidate + "_" + bCandidate;
-                            if (!asignacionCurso.containsKey(newSlotKey)) {
-                                Set<String> ocupadosNew = ocupacionDocentes.getOrDefault(newSlotKey, Collections.emptySet());
-                                if (existingDoc.isEmpty() || !ocupadosNew.contains(existingDoc)) {
-                                    asignacionCurso.remove(existingSlotKey);
-                                    if (!existingDoc.isEmpty()) {
-                                        Set<String> s = ocupacionDocentes.get(existingSlotKey);
-                                        if (s != null) s.remove(existingDoc);
-                                    }
-                                    crearYRegistrarDetalle(
-                                            new MateriaEvaluacionDTO(existingDetalle.getId(), existingDetalle.getMateriaId(), existingDetalle.getMateriaNombre(), existingDetalle.getTipoComplejidad(), true, existingDoc),
-                                            existingDoc, curso, dCandidate, bCandidate, newSlotKey, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin
-                                    );
-                                    int dOld = Integer.parseInt(existingSlotKey.split("_")[0]);
-                                    int bOld = Integer.parseInt(existingSlotKey.split("_")[1]);
-                                    crearYRegistrarDetalle(m, docNom, curso, dOld, bOld, existingSlotKey, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin);
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 5. Asignar en el primer slot libre disponible (1, 2 o 3)
-        for (int b : List.of(bloquePreferido, bloqueSecundario, 3)) {
-            for (int d : diasDisponibles) {
-                String slotKey = d + "_" + b;
-                if (!asignacionCurso.containsKey(slotKey)) {
-                    crearYRegistrarDetalle(m, docNom, curso, d, b, slotKey, asignacionCurso, ocupacionDocentes, fechas, hora1Ini, hora1Fin, hora2Ini, hora2Fin);
-                    return;
-                }
-            }
-        }
     }
 
     private void crearYRegistrarDetalle(
@@ -647,29 +809,15 @@ public class HorarioExamenService {
             String docNom,
             Curso curso,
             int dia,
-            int bloque,
-            String slotKey,
+            int ordenDia,
+            String hIni,
+            String hFin,
             Map<String, HorarioExamenDetalleDTO> asignacionCurso,
             Map<String, Set<String>> ocupacionDocentes,
-            List<LocalDate> fechas,
-            String hora1Ini, String hora1Fin,
-            String hora2Ini, String hora2Fin) {
+            List<LocalDate> fechas) {
 
         LocalDate f = fechas.get(dia - 1);
         String diaSem = DisponibilidadService.obtenerDiaSemanaEnEspanol(f);
-        boolean isCol = esColegio(curso);
-
-        String hIni;
-        String hFin;
-        if (isCol) {
-            // Colegio: 1° examen 07h30-08h30, 2° examen 09h30-10h30 (o 08h30-09h30 si es fácil)
-            hIni = (bloque == 1) ? "07h30" : ((bloque == 2) ? "09h30" : "08h30");
-            hFin = (bloque == 1) ? "08h30" : ((bloque == 2) ? "10h30" : "09h30");
-        } else {
-            // Toda la escuela da su primer examen a las 7h30, el segundo a las 8h30
-            hIni = (bloque == 1) ? "07h30" : ((bloque == 2) ? "08h30" : "09h30");
-            hFin = (bloque == 1) ? "08h30" : ((bloque == 2) ? "09h30" : "10h30");
-        }
 
         HorarioExamenDetalleDTO det = new HorarioExamenDetalleDTO(
                 null,
@@ -678,7 +826,7 @@ public class HorarioExamenService {
                 dia,
                 f,
                 diaSem,
-                bloque,
+                ordenDia,
                 m.getMateriaId(),
                 m.getMateriaNombre(),
                 m.getTipoComplejidad(),
@@ -687,12 +835,31 @@ public class HorarioExamenService {
                 docNom
         );
 
+        String slotKey = dia + "_" + ordenDia;
         asignacionCurso.put(slotKey, det);
         if (docNom != null && !docNom.isEmpty()) {
-            ocupacionDocentes.computeIfAbsent(slotKey, k -> new HashSet<>()).add(docNom);
             String timeKey = dia + "_" + hIni;
             ocupacionDocentes.computeIfAbsent(timeKey, k -> new HashSet<>()).add(docNom);
+            ocupacionDocentes.computeIfAbsent(slotKey, k -> new HashSet<>()).add(docNom);
         }
+    }
+
+    public static String getHoraInicioPorOrden(int orden) {
+        return switch (orden) {
+            case 1 -> "07h30";
+            case 2 -> "08h30";
+            case 3 -> "09h30";
+            default -> "07h30";
+        };
+    }
+
+    public static String getHoraFinPorOrden(int orden) {
+        return switch (orden) {
+            case 1 -> "08h30";
+            case 2 -> "09h30";
+            case 3 -> "10h30";
+            default -> "08h30";
+        };
     }
 
     public static boolean esColegio(Curso c) {

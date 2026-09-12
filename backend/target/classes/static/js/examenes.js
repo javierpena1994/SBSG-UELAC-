@@ -241,45 +241,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const evaluables = materiasList.filter(m => m.aplicaExamen !== false).length;
       const noEvaluables = materiasList.filter(m => m.aplicaExamen === false).length;
 
-      badgeCountComplejas.textContent = 'Multi-Curso';
-      badgeCountNoComplejas.textContent = `${evaluables} Materias Activas`;
-
-      subjectsContainer.innerHTML = `
-        <div style="padding: 18px 20px; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe; color: #1e3a8a;">
-          <div style="display: flex; align-items: flex-start; gap: 14px;">
-            <i class="fa-solid fa-star" style="font-size: 26px; color: #2563eb; margin-top: 3px;"></i>
-            <div style="flex: 1;">
-              <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #1e40af;">
-                ⭐ Sorteo Institucional Global Activado (Todos los Cursos Sincronizados)
-              </h4>
-              <p style="margin: 0 0 10px 0; font-size: 13px; line-height: 1.5; color: #1e3a8a;">
-                El algoritmo generará la distribución general de todo el colegio de manera armónica y simultánea:
-              </p>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; font-size: 12px; color: #1e40af;">
-                <div style="background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #dbeafe;">
-                  <strong>🎓 Bachillerato (1°, 2° y 3° BGU):</strong><br>
-                  7 días de exámenes. Empiezan 2 días antes (Días 1 y 2).
-                </div>
-                <div style="background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #dbeafe;">
-                  <strong>🏫 Inicial y Básica (Inicial a 10° EGB):</strong><br>
-                  5 días de exámenes (Días 3 al 7). Días 1 y 2 tienen clases regulares.
-                </div>
-                <div style="background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #dbeafe;">
-                  <strong>🛡️ Prevención de Choques Docentes:</strong><br>
-                  Profesores compartidos nunca tendrán 2 exámenes en la misma hora.
-                </div>
-                <div style="background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #dbeafe;">
-                  <strong>⚖️ Balance Pedagógico 1 + 1:</strong><br>
-                  Máximo 1 materia compleja + 1 menos compleja por día en cada curso.
-                </div>
-              </div>
-              <div style="margin-top: 10px; font-size: 11.5px; color: #3b82f6;">
-                <i class="fa-solid fa-circle-check"></i> Materias evaluadas según catálogo: <strong>${evaluables} evaluables</strong> (${noEvaluables} exentas como biblioteca, tutoría, atención a PPFF, etc.).
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
+      if (badgeCountComplejas) badgeCountComplejas.textContent = 'Multi-Curso';
+      if (badgeCountNoComplejas) badgeCountNoComplejas.textContent = `${evaluables} Materias Activas`;
+      if (subjectsContainer) subjectsContainer.innerHTML = '';
       return;
     }
 
@@ -424,7 +388,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         titulo: inputTitulo.value.trim() || 'Horario General de Exámenes Institucional',
         fechaInicio: inputFechaInicio.value,
         numDias: 7,
-        materiasPorDia: Number(selectMateriasDia.value) || 2,
+        materiasPorDia: 2,
         saltarFinesDeSemana: checkSaltarFds.checked,
         materias: []
       };
@@ -440,7 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         titulo: inputTitulo.value.trim() || 'Exámenes Institucionales',
         fechaInicio: inputFechaInicio.value,
         numDias: Number(selectNumDias.value),
-        materiasPorDia: Number(selectMateriasDia.value),
+        materiasPorDia: 2,
         saltarFinesDeSemana: checkSaltarFds.checked,
         materias: materiasSeleccionadas
       };
@@ -448,7 +412,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       btnGenerarSorteo.disabled = true;
-      btnGenerarSorteo.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Realizando Sorteo Inteligente...';
+      btnGenerarSorteo.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Generando Horario...';
 
       const data = await API.generarSorteoExamen(payload);
       currentGeneratedSchedule = data;
@@ -466,7 +430,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       App.showToast('Error al generar sorteo: ' + err.message, 'error');
     } finally {
       btnGenerarSorteo.disabled = false;
-      btnGenerarSorteo.innerHTML = '<i class="fa-solid fa-dice" style="font-size:16px;"></i> Generar Sorteo Aleatorio de Horario';
+      btnGenerarSorteo.innerHTML = '<i class="fa-solid fa-dice" style="font-size:18px;"></i> Generar Horario de Exámenes';
     }
   }
 
@@ -897,42 +861,27 @@ document.addEventListener('DOMContentLoaded', async () => {
       let slot09h30 = null;
 
       if (isEscuela) {
-        // Escuela: Primer examen 07h30, Segundo examen 08h30
-        slot07h30 = dayExams[0] || null;
-        slot08h30 = dayExams[1] || null;
+        // Escuela: Primer examen 07h30 (ordenDia 1), Segundo examen 08h30 (ordenDia 2)
+        slot07h30 = dayExams.find(d => d.ordenDia === 1 || (d.horaInicio && d.horaInicio.includes('07h30'))) || dayExams[0] || null;
+        slot08h30 = dayExams.find(d => d.ordenDia === 2 || (d.horaInicio && d.horaInicio.includes('08h30'))) || (dayExams.length > 1 ? dayExams[1] : null);
       } else {
-        // Colegio: Examen 1 (07h30 si compleja o asignada 07h30, 08h30 si fácil), Examen 2 (09h30)
-        if (dayExams.length === 1) {
-          const e1 = dayExams[0];
-          const isComp = isDificilCompleja(e1.tipoComplejidad) || sugerirComplejidadPorNombre(e1.materiaNombre);
-          if (e1.horaInicio && (e1.horaInicio.includes('08:30') || e1.horaInicio.includes('08h30'))) {
-            slot08h30 = e1;
-          } else if (e1.horaInicio && (e1.horaInicio.includes('07:30') || e1.horaInicio.includes('07h30'))) {
-            slot07h30 = e1;
-          } else if (isComp) {
-            slot07h30 = e1;
-          } else {
-            slot08h30 = e1;
-          }
-        } else if (dayExams.length === 2) {
-          const e1 = dayExams[0];
-          const e2 = dayExams[1];
-          const e1IsComp = isDificilCompleja(e1.tipoComplejidad) || sugerirComplejidadPorNombre(e1.materiaNombre);
+        // Colegio: Franjas 07h30, 08h30 y 09h30 según ordenDia u horaInicio (con variación: a veces consecutivos, a veces con espacio intermedio)
+        slot07h30 = dayExams.find(d => d.ordenDia === 1 || (d.horaInicio && (d.horaInicio.includes('07:30') || d.horaInicio.includes('07h30')))) || null;
+        slot08h30 = dayExams.find(d => d.ordenDia === 2 || (d.horaInicio && (d.horaInicio.includes('08:30') || d.horaInicio.includes('08h30')))) || null;
+        slot09h30 = dayExams.find(d => d.ordenDia === 3 || (d.horaInicio && (d.horaInicio.includes('09:30') || d.horaInicio.includes('09h30')))) || null;
 
-          if (e1.horaInicio && (e1.horaInicio.includes('08:30') || e1.horaInicio.includes('08h30'))) {
-            slot08h30 = e1;
-          } else if (e1.horaInicio && (e1.horaInicio.includes('07:30') || e1.horaInicio.includes('07h30'))) {
-            slot07h30 = e1;
-          } else if (e1IsComp) {
-            slot07h30 = e1;
-          } else {
-            slot08h30 = e1;
+        // Fallback defensivo si algún examen no tuviera ordenDia u horaInicio mapeada
+        if (!slot07h30 && !slot08h30 && !slot09h30 && dayExams.length > 0) {
+          if (dayExams.length === 1) {
+            slot07h30 = dayExams[0];
+          } else if (dayExams.length === 2) {
+            slot07h30 = dayExams[0];
+            slot08h30 = dayExams[1];
+          } else if (dayExams.length >= 3) {
+            slot07h30 = dayExams[0];
+            slot08h30 = dayExams[1];
+            slot09h30 = dayExams[2];
           }
-          slot09h30 = e2;
-        } else if (dayExams.length >= 3) {
-          slot07h30 = dayExams[0];
-          slot08h30 = dayExams[1];
-          slot09h30 = dayExams[2];
         }
       }
 

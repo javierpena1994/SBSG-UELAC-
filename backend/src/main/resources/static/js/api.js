@@ -104,6 +104,11 @@ const API = (() => {
     },
     guardarHorarioClasesDocente: (data) => request('/horarios-clases/guardar-docente', { method: 'POST', body: JSON.stringify(data) }),
     guardarHorarioClasesCurso: (data) => request('/horarios-clases/guardar-curso', { method: 'POST', body: JSON.stringify(data) }),
+    validarConflictoCurso: (cursoId, diaSemana, franjaHorariaId, docenteId) => {
+      let qs = `?cursoId=${cursoId}&diaSemana=${encodeURIComponent(diaSemana)}&franjaHorariaId=${franjaHorariaId}`;
+      if (docenteId) qs += `&docenteId=${docenteId}`;
+      return request(`/horarios-clases/validar-conflicto${qs}`);
+    },
 
     // Contingencias
     getContingencias: (params = {}) => {

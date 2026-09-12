@@ -50,5 +50,14 @@ public class HorarioClaseController {
     public ResponseEntity<List<HorarioClaseDTO>> guardarCurso(@RequestBody GuardarHorarioClaseRequest request) {
         return ResponseEntity.ok(horarioClaseService.guardarHorarioCurso(request));
     }
+
+    @GetMapping("/validar-conflicto")
+    public ResponseEntity<java.util.Map<String, Object>> validarConflicto(
+            @RequestParam("cursoId") Long cursoId,
+            @RequestParam("diaSemana") String diaSemana,
+            @RequestParam("franjaHorariaId") Long franjaHorariaId,
+            @RequestParam(value = "docenteId", required = false) Long docenteId) {
+        return ResponseEntity.ok(horarioClaseService.validarConflictoCurso(cursoId, diaSemana, franjaHorariaId, docenteId));
+    }
 }
 

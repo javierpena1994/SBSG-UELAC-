@@ -19,7 +19,7 @@ public interface HorarioClaseRepository extends JpaRepository<HorarioClase, Long
 
     Optional<HorarioClase> findByDocenteIdAndDiaSemanaAndFranjaHorariaId(Long docenteId, String diaSemana, Long franjaHorariaId);
 
-    Optional<HorarioClase> findByCursoIdAndDiaSemanaAndFranjaHorariaId(Long cursoId, String diaSemana, Long franjaHorariaId);
+    List<HorarioClase> findByCursoIdAndDiaSemanaAndFranjaHorariaId(Long cursoId, String diaSemana, Long franjaHorariaId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM HorarioClase h WHERE h.docente.id = :docenteId")
